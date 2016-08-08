@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgServicehistoryDao">
+    
+	<sql id="lgServicehistoryColumns">
+		a.id AS "id",
+		a.machineid AS "machineId",
+		a.servicetime AS "serviceTime",
+		a.orderno AS "orderNo",
+		a.servicehuman AS "serviceHuman",
+		a.serviceinfo AS "serviceInfo"
+	</sql>
+	
+	<sql id="lgServicehistoryJoins">
+	</sql>
+    
+	<select id="get" resultType="LgServicehistory">
+		SELECT 
+			<include refid="lgServicehistoryColumns"/>
+		FROM lg_servicehistory a
+		<include refid="lgServicehistoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgServicehistory">
+		SELECT 
+			<include refid="lgServicehistoryColumns"/>
+		FROM lg_servicehistory a
+		<include refid="lgServicehistoryJoins"/>
+		<where>
+			<if test="machineId != null and machineId != ''">
+				AND a.machineId = #{machineId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgServicehistory">
+		SELECT 
+			<include refid="lgServicehistoryColumns"/>
+		FROM lg_servicehistory a
+		<include refid="lgServicehistoryJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_servicehistory(
+			id,
+			machineid,
+			servicetime,
+			orderno,
+			servicehuman,
+			serviceinfo
+		) VALUES (
+			#{id},
+			#{machineId},
+			#{serviceTime},
+			#{orderNo},
+			#{serviceHuman},
+			#{serviceInfo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_servicehistory SET 	
+			machineid = #{machineId},
+			servicetime = #{serviceTime},
+			orderno = #{orderNo},
+			servicehuman = #{serviceHuman},
+			serviceinfo = #{serviceInfo}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_servicehistory
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

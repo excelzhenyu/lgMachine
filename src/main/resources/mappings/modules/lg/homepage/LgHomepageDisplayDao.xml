@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.homepage.LgHomepageDisplayDao">
+    
+	<sql id="lgUserHomepageRelationshipColumns">
+		a.id AS "id",
+		a.userid AS "userId",
+		a.urlid AS "urlId",
+		a.urlno AS "urlNo"
+	</sql>
+	
+	<sql id="lgUserHomepageRelationshipColumns1">
+		a.id AS "id",
+		c.name AS "userId",
+		b.href AS "urlId",
+		a.urlno AS "urlNo"
+	</sql>
+	
+	<sql id="lgUserHomepageRelationshipJoins">
+	</sql>
+    
+	<select id="get" resultType="LgUserHomepageRelationship">
+		SELECT 
+			<include refid="lgUserHomepageRelationshipColumns"/>
+		FROM lg_userhomepagerelationship a
+		<include refid="lgUserHomepageRelationshipJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgUserHomepageRelationship">
+		SELECT 
+			<include refid="lgUserHomepageRelationshipColumns1"/>
+		From lg_UserHomePageRelationship a 
+		left join sys_menu b on a.urlid=b.id
+		left join sys_user c on a.userid=c.id
+		<include refid="lgUserHomepageRelationshipJoins"/>
+		<where>
+			<if test="userId != null and userId != ''">
+				AND a.userid = #{userId}
+			</if>
+		</where>
+		ORDER BY a.urlno
+	</select>
+<!-- 
+	<select id="findList" resultType="LgUserHomepageRelationship">
+		SELECT 
+			<include refid="lgUserHomepageRelationshipColumns"/>
+		FROM lg_userhomepagerelationship a
+		<include refid="lgUserHomepageRelationshipJoins"/>
+		<where>
+			<if test="userId != null and userId != ''">
+				AND a.userid = #{userId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+ -->	
+	<select id="findAllList" resultType="LgUserHomepageRelationship">
+		SELECT 
+			<include refid="lgUserHomepageRelationshipColumns"/>
+		FROM lg_userhomepagerelationship a
+		<include refid="lgUserHomepageRelationshipJoins"/>
+		<where>
+
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_userhomepagerelationship(
+			id,
+			userid,
+			urlid,
+			urlno
+		) VALUES (
+			#{id},
+			#{userId},
+			#{urlId},
+			#{urlNo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_userhomepagerelationship SET 	
+			userid = #{userId},
+			urlid = #{urlId},
+			urlno = #{urlNo}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_userhomepagerelationship
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

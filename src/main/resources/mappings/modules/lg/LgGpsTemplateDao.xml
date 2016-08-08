@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgGpsTemplateDao">
+    
+	<sql id="lgGpsTemplateColumns">
+		a.id AS "id",
+		a.gpstemplateno AS "gpsTemplateNo",
+		a.gpstemplatename AS "gpsTemplateName",
+		a.stopmark AS "stopMark",
+		a.starttime AS "startTime",
+		a.stoptime AS "stopTime"
+	</sql>
+	
+	<sql id="lgGpsTemplateJoins">
+	</sql>
+    
+	<select id="get" resultType="LgGpsTemplate">
+		SELECT 
+			<include refid="lgGpsTemplateColumns"/>
+		FROM lg_gpstemplate a
+		<include refid="lgGpsTemplateJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgGpsTemplate">
+		SELECT 
+			<include refid="lgGpsTemplateColumns"/>
+		FROM lg_gpstemplate a
+		<include refid="lgGpsTemplateJoins"/>
+		<where>
+			
+			<if test="gpsTemplateNo != null and gpsTemplateNo != ''">
+				AND a.gpstemplateno = #{gpsTemplateNo}
+			</if>
+			<if test="gpsTemplateName != null and gpsTemplateName != ''">
+				AND a.gpstemplatename LIKE 
+					<if test="dbName == 'oracle'">'%'||#{gpsTemplateName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{gpsTemplateName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{gpsTemplateName},'%')</if>
+			</if>
+			<if test="stopMark != null and stopMark != ''">
+				AND a.stopmark = #{stopMark}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND a.starttime = #{startTime}
+			</if>
+			<if test="stopTime != null and stopTime != ''">
+				AND a.stoptime = #{stopTime}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgGpsTemplate">
+		SELECT 
+			<include refid="lgGpsTemplateColumns"/>
+		FROM lg_gpstemplate a
+		<include refid="lgGpsTemplateJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_gpstemplate(
+			id,
+			gpstemplateno,
+			gpstemplatename,
+			stopmark,
+			starttime,
+			stoptime
+		) VALUES (
+			#{id},
+			#{gpsTemplateNo},
+			#{gpsTemplateName},
+			#{stopMark},
+			#{startTime},
+			#{stopTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_gpstemplate SET 	
+			gpstemplateno = #{gpsTemplateNo},
+			gpstemplatename = #{gpsTemplateName},
+			stopmark = #{stopMark},
+			starttime = #{startTime},
+			stoptime = #{stopTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_gpstemplate
+		WHERE id = #{id}
+	</update>
+	
+	<select id="checkGpsTemplateNo" resultType="LgGpsTemplate">
+		SELECT
+		<include refid="lgGpsTemplateColumns" />
+		FROM lg_gpstemplate a
+		<include refid="lgGpsTemplateJoins" />
+		WHERE a.gpsTemplateNo = #{gpsTemplateNo}
+		<if test="@Ognl@isNotEmpty(id)"> AND id!=#{id}</if>
+		limit 1
+	</select>
+	
+	<select id="checkGpsTemplateName" resultType="LgGpsTemplate">
+		SELECT
+		<include refid="lgGpsTemplateColumns" />
+		FROM lg_gpstemplate a
+		<include refid="lgGpsTemplateJoins" />
+		WHERE a.gpsTemplateName = #{gpsTemplateName}
+		<if test="@Ognl@isNotEmpty(id)"> AND id!=#{id}</if>
+		limit 1
+	</select>
+	
+</mapper>

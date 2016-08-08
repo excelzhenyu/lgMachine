@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.slice.LgSliceStaticsStatusDetailDao">
+    
+	<sql id="lgSliceStaticsStatusDetailColumns">
+		a.id AS "id",
+		a.inserttime AS "insertTime",
+		a.slicestatusid AS "sliceStatusId",
+		a.deviceno AS "deviceNo",
+		a.sensorno AS "sensorNo",
+		a.status AS "status",
+		a.statuscount AS "statusCount",
+		a.statusduration AS "statusDuration",
+		a.statusmax AS "statusMax",
+		a.statusmin AS "statusMin",
+		a.statusavg AS "statusAvg",
+		a.status_5 AS "status5",
+		a.status_25 AS "status25",
+		a.status_50 AS "status50",
+		a.status_75 AS "status75",
+		a.status_95 AS "status95",
+		a.statusstandard_std AS "statusStandardStd",
+		a.statusvariance_std AS "statusVarianceStd"
+	</sql>
+	
+	<sql id="lgSliceStaticsStatusDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="LgSliceStaticsStatusDetail">
+		SELECT 
+			<include refid="lgSliceStaticsStatusDetailColumns"/>
+		FROM lg_slicestaticsstatusdetail a
+		<include refid="lgSliceStaticsStatusDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgSliceStaticsStatusDetail">
+		SELECT 
+			<include refid="lgSliceStaticsStatusDetailColumns"/>
+		FROM lg_slicestaticsstatusdetail a
+		<include refid="lgSliceStaticsStatusDetailJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgSliceStaticsStatusDetail">
+		SELECT 
+			<include refid="lgSliceStaticsStatusDetailColumns"/>
+		FROM lg_slicestaticsstatusdetail a
+		<include refid="lgSliceStaticsStatusDetailJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_slicestaticsstatusdetail(
+			id,
+			inserttime,
+			slicestatusid,
+			deviceno,
+			sensorno,
+			status,
+			statuscount,
+			statusduration,
+			statusmax,
+			statusmin,
+			statusavg,
+			status_5,
+			status_25,
+			status_50,
+			status_75,
+			status_95,
+			statusstandard_std,
+			statusvariance_std
+		) VALUES (
+			#{id},
+			sysdate(),
+			#{sliceStatusId},
+			#{deviceNo},
+			#{sensorNo},
+			#{status},
+			#{statusCount},
+			#{statusDuration},
+			#{statusMax},
+			#{statusMin},
+			#{statusAvg},
+			#{status5},
+			#{status25},
+			#{status50},
+			#{status75},
+			#{status95},
+			#{statusStandardStd},
+			#{statusVarianceStd}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_slicestaticsstatusdetail SET 	
+			inserttime = #{insertTime},
+			slicestatusid = #{sliceStatusId},
+			deviceno = #{deviceNo},
+			sensorno = #{sensorNo},
+			status = #{status},
+			statuscount = #{statusCount},
+			statusduration = #{statusDuration},
+			statusmax = #{statusMax},
+			statusmin = #{statusMin},
+			statusavg = #{statusAvg},
+			status_5 = #{status5},
+			status_25 = #{status25},
+			status_50 = #{status50},
+			status_75 = #{status75},
+			status_95 = #{status95},
+			statusstandard_std = #{statusStandardStd},
+			statusvariance_std = #{statusVarianceStd}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_slicestaticsstatusdetail
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

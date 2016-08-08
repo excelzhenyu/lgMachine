@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.distinguish.LgDistinguishmissandfalsedetailDao">
+    
+	<sql id="lgDistinguishmissandfalsedetailColumns">
+		a.id AS "id",
+		a.distinguishid AS "distinguishId",
+		a.distinguishCondition AS "condition",
+		a.distinguishOption AS "option",
+		a.value1 AS "value1",
+		a.value2 AS "value2",
+		a.isvalid AS "isValid"
+	</sql>
+	
+	<sql id="lgDistinguishmissandfalsedetailJoins">
+	</sql>
+    
+	<select id="get" resultType="LgDistinguishmissandfalsedetail">
+		SELECT 
+			<include refid="lgDistinguishmissandfalsedetailColumns"/>
+		FROM lg_distinguishmissandfalsedetail a
+		<include refid="lgDistinguishmissandfalsedetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgDistinguishmissandfalsedetail">
+		SELECT 
+			<include refid="lgDistinguishmissandfalsedetailColumns"/>
+		FROM lg_distinguishmissandfalsedetail a
+		<include refid="lgDistinguishmissandfalsedetailJoins"/>
+		<where>
+			<if test="distinguishId!=null and distinguishId!=''">
+				AND a.distinguishId=#{distinguishId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgDistinguishmissandfalsedetail">
+		SELECT 
+			<include refid="lgDistinguishmissandfalsedetailColumns"/>
+		FROM lg_distinguishmissandfalsedetail a
+		<include refid="lgDistinguishmissandfalsedetailJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_distinguishmissandfalsedetail(
+			id,
+			distinguishid,
+			distinguishCondition,
+			distinguishOption,
+			value1,
+			value2,
+			isvalid
+		) VALUES (
+			#{id},
+			#{distinguishId},
+			#{condition},
+			#{option},
+			#{value1},
+			#{value2},
+			#{isValid}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_distinguishmissandfalsedetail SET 	
+			distinguishid = #{distinguishId},
+			distinguishCondition = #{condition},
+			distinguishOption = #{option},
+			value1 = #{value1},
+			value2 = #{value2},
+			isvalid = #{isValid}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_distinguishmissandfalsedetail
+		WHERE id = #{id}
+	</update>
+	
+	<select id="checkCondition" resultType="LgDistinguishmissandfalsedetail">
+		SELECT
+		<include refid="lgDistinguishmissandfalsedetailColumns" />
+		FROM lg_distinguishmissandfalsedetail a
+		<include refid="lgDistinguishmissandfalsedetailJoins" />
+		WHERE a.distinguishCondition = #{condition}
+		<if test="@Ognl@isNotEmpty(distinguishId)"> AND a.distinguishId!=#{distinguishId}</if>
+		limit 1
+	</select>
+	
+	<select id="getDetailList" resultType="LgDistinguishmissandfalsedetail">
+		SELECT
+		<include refid="lgDistinguishmissandfalsedetailColumns"/>
+		FROM lg_distinguishmissandfalsedetail a 
+		where a.distinguishId=(select id from lg_distinguishmissandfalse b where b.solutionType=#{solutionType})
+	</select>
+</mapper>

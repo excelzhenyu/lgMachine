@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgMachineinfoDao">
+    
+	<sql id="lgMachineinfoColumns">
+		a.id AS "id",
+		a.machineid AS "machineId",
+		a.machineinfo AS "machineInfo"
+	</sql>
+	
+	<sql id="lgMachineinfoJoins">
+	</sql>
+    
+	<select id="get" resultType="LgMachineinfo">
+		SELECT 
+			<include refid="lgMachineinfoColumns"/>
+		FROM lg_machineinfo a
+		<include refid="lgMachineinfoJoins"/>
+		<where>
+		<if test="id != null and id != ''">
+				AND a.id = #{id}
+		</if>
+			<if test="machineId != null and machineId != ''">
+				AND a.machineId = #{machineId}
+			</if>
+		</where>
+		
+	</select>
+	
+	<select id="findList" resultType="LgMachineinfo">
+		SELECT 
+			<include refid="lgMachineinfoColumns"/>
+		FROM lg_machineinfo a
+		<include refid="lgMachineinfoJoins"/>
+		<where>
+			<if test="machineId != null and machineId != ''">
+				AND a.machineId = #{machineId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgMachineinfo">
+		SELECT 
+			<include refid="lgMachineinfoColumns"/>
+		FROM lg_machineinfo a
+		<include refid="lgMachineinfoJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_machineinfo(
+			id,
+			machineid,
+			machineinfo
+		) VALUES (
+			#{id},
+			#{machineId},
+			#{machineInfo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_machineinfo SET 	
+			machineid = #{machineId},
+			machineinfo = #{machineInfo}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_machineinfo
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

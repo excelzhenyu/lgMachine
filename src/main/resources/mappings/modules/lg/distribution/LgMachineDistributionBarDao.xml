@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.distribution.LgMachineDistributionBarDao">
+    
+	<insert id="saveMachineOrderDistributionByCity">
+		insert into lg_machineorderdistributionbycitybar 
+		select replace(uuid(),'-','') as id,
+			d.workmonthid as yearmonthid,d.workmonthname as yearmonthname,
+			d.machinetype, d.producttype, d.ordernumber,d.province as provinceno, d.citycode as levelcityno , d.city as levelcityname, 
+			sum(1) as citymachinesum,sysdate()
+			from (
+				select 
+					t.deviceno,t.workmonthid,t.workmonthname, t.city, f.citycode as province,
+					t.ordernumber,
+					c.machinetype, c.producttype,
+					e.citycode
+					
+				from (select 
+					a.deviceno,a.workmonthid,a.workmonthname, a.city,a.province,
+					b.ordernumber
+					from 
+						lg_devicemonthstatics a
+					left join 
+						lg_machineprofile b 
+						on a.deviceno=b.code 
+					where 
+						 a.workmonthid = #{monthId}
+				) t 
+				left join 
+					lg_machinetype c
+					on t.ordernumber = c.ordernumber 
+				left join 
+					lg_mapcity e
+					on t.city = e.cityname 
+				left join 
+					lg_mapcity f
+					on t.province = f.cityname 
+			) d 
+		group by d.ordernumber, d.city, d.province
+		
+	</insert>
+	
+	<insert id="saveMachineOrderDistributionByProvince">
+		insert into lg_machineorderdistributionbyprovincebar
+			select 
+					replace(uuid(),'-','') as id,
+					b.yearmonthid,
+					b.yearmonthname,
+					b.machinetype,
+					b.producttype,
+					b.machineorder,
+					b.provinceno,
+					c.cityname as provincename,
+					b.provincemachine_sum,
+					sysdate()
+			from (
+				select 
+				    max(a.yearmonthid) as yearmonthid,
+				    max(a.yearmonthname) as yearmonthname,
+				    a.machinetype,
+				    a.producttype,
+		            a.machineorder,
+					a.provinceno,
+				    sum(a.citymachinesum)  as provincemachine_sum
+				from lg_machineorderdistributionbycitybar a 
+					where a.yearmonthid = #{monthId}
+				group by a.machinetype,a.producttype,a.machineorder,a.provinceno
+			) b
+			left join lg_mapcity c
+				on b.provinceno = c.citycode
+	</insert>
+	
+	<insert id="saveMachineTypeDistributionByCity">
+		insert into lg_machinetypedistributionbycitybar
+		select 
+			replace(uuid(),'-','') as id,
+		    max(a.yearmonthid) as yearmonthid,
+		    max(a.yearmonthname) as yearmonthname,
+		    a.machinetype,
+		    a.producttype,
+		    max(a.provinceno) as provinceno,
+		    a.levelcityno,
+		    a.levelcityname,
+		    sum(a.citymachinesum)  as citymachinesum,
+		    sysdate()
+		from lg_machineorderdistributionbycitybar a 
+		where a.yearmonthid = #{monthId} 
+		group by a.machinetype,a.producttype,a.levelcityno,a.levelCityName
+				
+	</insert>
+	
+	<insert id="saveMachineTypeDistributionByProvince">
+		insert into lg_machinetypedistributionbyprovincebar
+			select 
+			  replace(uuid(),'-','') as id,
+			  b.yearmonthid,
+			  b.yearmonthname,
+			  b.machinetype,
+			  producttype,
+			  b.provinceno,
+			  c.cityname as provincename,
+			  b.provincemachine_sum,
+			  sysdate()
+			from (
+			  select 
+			    max(a.yearmonthid) as yearmonthid,
+			    max(a.yearmonthname) as yearmonthname,
+			    a.machinetype,
+			    a.producttype,
+			    a.provinceno,
+			    sum(a.citymachinesum)  as provincemachine_sum
+			    from lg_machinetypedistributionbycitybar a 	
+			      where a.yearmonthid = #{monthId}
+			    group by a.machinetype, a.producttype,a.provinceno
+			) b
+			left join lg_mapcity c
+			  on b.provinceno = c.citycode
+	</insert>	
+	
+	<select id="getCityMachineTypeBarData" resultType="LgMachineDistributionBarData"> 
+		select 
+			a.productType AS dataType,
+			a.levelCityNo AS cityNo,
+			a.levelCityName AS cityName,
+			sum(a.cityMachineSum) AS dataCount
+		from lg_machinetypedistributionbycitybar a
+			where a.machineType=#{machineType} 
+			and a.yearmonthid=#{monthId} 
+			and EXISTS (select 1 from lg_mapcity b where a.provinceNo=b.cityCode and b.cityName=#{location})
+		group by a.productType,a.levelCityNo,a.levelCityName
+		order by a.productType
+	</select>
+	
+	<select id="getProvinceMachineTypeBarData" resultType="LgMachineDistributionBarData"> 
+		select 
+			productType AS dataType,
+			provinceNo AS cityNo,
+			provinceName AS cityName,
+			sum(provinceMachineSum) AS dataCount
+		from lg_machinetypedistributionbyprovincebar 
+			where machineType=#{machineType} and yearmonthid=#{monthId} 
+		group by productType,provinceNo,provinceName
+		order by productType
+	</select>
+	
+	<select id="getCityMachineOrderBarData" resultType="LgMachineDistributionBarData"> 
+		select 
+			a.machineOrder AS dataType,
+			a.levelCityNo AS cityNo,
+			a.levelCityName AS cityName,
+			sum(a.cityMachineSum) AS dataCount
+		from lg_machineorderdistributionbycitybar a
+		<where>
+			and a.yearmonthid=#{monthId} 
+			and a.machinetype = #{machineType}
+			and a.productType = #{productType}
+			<if test="orderNumber != null and orderNumber != ''">
+				and a.machineOrder = #{orderNumber}
+			</if>
+			and EXISTS (select 1 from lg_mapcity b where a.provinceNo=b.cityCode and b.cityName=#{location})
+			
+		</where>
+		group by a.machineOrder,a.levelCityNo,a.levelCityName
+		
+	</select>
+	
+	<select id="getProvinceMachineOrderBarData" resultType="LgMachineDistributionBarData"> 
+		select 
+			machineOrder AS dataType,
+			provinceNo AS cityNo,
+			provinceName AS cityName,
+			sum(provinceMachineSum) AS dataCount
+		from lg_machineorderdistributionbyprovincebar 
+		<where>
+			and yearmonthid=#{monthId} 
+			and machinetype = #{machineType}
+			and productType = #{productType}
+			<if test="orderNumber != null and orderNumber != ''">
+				and machineOrder = #{orderNumber}
+			</if>
+		</where>
+		group by machineOrder,provinceNo,provinceName
+		
+	</select>
+	
+</mapper>

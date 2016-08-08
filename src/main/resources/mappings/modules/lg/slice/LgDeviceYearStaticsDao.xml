@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.slice.LgDeviceYearStaticsDao">
+    
+	<sql id="lgDeviceYearStaticsColumns">
+		a.id AS "id",
+		a.inserttime AS "insertTime",
+		a.deviceno AS "deviceNo",
+		a.workyearid AS "workYearId",
+		a.workyearname AS "workYearName",
+		a.workcount AS "workCount",
+		a.workbegin AS "workBegin",
+		a.workstop AS "workStop",
+		a.slicerunduration AS "sliceRunDuration",
+		a.sliceworkduration AS "sliceWorkDuration",
+		a.runoffcount AS "runOffCount",
+		a.oilsum AS "oilSum",
+		a.oilavg AS "oilAvg",
+		a.rotationlspeedmax AS "rotationlSpeedMax",
+		a.latitudes AS "latitudes",
+		a.longitude AS "longitude",
+		a.province AS "province",
+		a.city AS "city",
+		a.address AS "address",
+		a.position AS "position",
+		a.alarmcount AS "alarmCount"
+	</sql>
+	
+	<sql id="lgDeviceYearStaticsJoins">
+	</sql>
+    
+	<select id="get" resultType="LgDeviceYearStatics">
+		SELECT 
+			<include refid="lgDeviceYearStaticsColumns"/>
+		FROM lg_deviceyearstatics a
+		<include refid="lgDeviceYearStaticsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgDeviceYearStatics">
+		SELECT 
+			<include refid="lgDeviceYearStaticsColumns"/>
+		FROM lg_deviceyearstatics a
+		<include refid="lgDeviceYearStaticsJoins"/>
+		<where>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgDeviceYearStatics">
+		SELECT 
+			<include refid="lgDeviceYearStaticsColumns"/>
+		FROM lg_deviceyearstatics a
+		<include refid="lgDeviceYearStaticsJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_deviceyearstatics(
+			id,
+			inserttime,
+			deviceno,
+			workyearid,
+			workyearname,
+			workcount,
+			workbegin,
+			workstop,
+			slicerunduration,
+			sliceworkduration,
+			runoffcount,
+			oilsum,
+			oilavg,
+			rotationlspeedmax,
+			latitudes,
+			longitude,
+			province,
+			city,
+			address,
+			position,
+			alarmcount
+		) VALUES (
+			#{id},
+			sysdate(),
+			#{deviceNo},
+			#{workYearId},
+			#{workYearName},
+			#{workCount},
+			#{workBegin},
+			#{workStop},
+			#{sliceRunDuration},
+			#{sliceWorkDuration},
+			#{runOffCount},
+			#{oilSum},
+			#{oilAvg},
+			#{rotationlSpeedMax},
+			#{latitudes},
+			#{longitude},
+			#{province},
+			#{city},
+			#{address},
+			#{position},
+			#{alarmCount}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_deviceyearstatics SET 	
+			inserttime = #{insertTime},
+			deviceno = #{deviceNo},
+			workyearid = #{workYearId},
+			workyearname = #{workYearName},
+			workcount = #{workCount},
+			workbegin = #{workBegin},
+			workstop = #{workStop},
+			slicerunduration = #{sliceRunDuration},
+			sliceworkduration = #{sliceWorkDuration},
+			runoffcount = #{runOffCount},
+			oilsum = #{oilSum},
+			oilavg = #{oilAvg},
+			rotationlspeedmax = #{rotationlSpeedMax},
+			latitudes = #{latitudes},
+			longitude = #{longitude},
+			province = #{province},
+			city = #{city},
+			address = #{address},
+			position = #{position},
+			alarmcount = #{alarmCount}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_deviceyearstatics
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getRunningIndexData" resultType="LgDeviceYearStatics">
+	   SELECT b.modelNumber AS "productType", 
+	          b.orderNumber AS "orderNumber", 
+	          b.jobWorkState AS "jobWorkState",
+	          a.workYearId AS "workYearId",
+	          COUNT(a.deviceNo) AS "aliveCount",
+	          SUM(a.sliceRunDuration) AS "workHourSum",
+	          SUM(a.runOffCount) AS "powerOnSum"
+        FROM lg_deviceyearstatics a
+        LEFT JOIN lg_machineprofile b ON b.`code` = a.deviceNo
+        <where>
+            <if test="deviceNoMult.length != 0 and deviceNoMult != null">
+                AND a.deviceNo IN 
+                <foreach item="item" index="index" collection="deviceNoMult" 
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="workYearId !='' and workYearId != null">
+                AND a.workYearId = #{workYearId}
+            </if>
+            <if test="workProvinceMult.length != 0 and workProvinceMult != null">
+                AND a.province IN 
+                <foreach item="item" index="index" collection="workProvinceMult" 
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="workDurationGreater !='' and workDurationGreater != null">
+                <![CDATA[AND a.sliceWorkDuration > #{workDurationGreater}]]>
+            </if>
+            <if test="workYearGreater !='' and workYearGreater != null">
+                <![CDATA[AND a.workYearId > #{workYearGreater}]]>
+            </if>
+        </where>
+        GROUP BY b.modelNumber, b.orderNumber, b.jobWorkState, a.workYearId
+        ORDER BY b.modelNumber, b.orderNumber, b.jobWorkState, a.workYearId DESC
+	</select>
+	
+</mapper>

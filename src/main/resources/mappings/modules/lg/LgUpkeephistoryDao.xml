@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgUpkeephistoryDao">
+    
+	<sql id="lgUpkeephistoryColumns">
+		a.id AS "id",
+		a.machineid AS "machineId",
+		a.upkeeptime AS "upkeepTime",
+		a.orderno AS "orderNo",
+		a.orderhuman AS "orderHuman",
+		a.upkeepinfo AS "upkeepInfo"
+	</sql>
+	
+	<sql id="lgUpkeephistoryJoins">
+	</sql>
+    
+	<select id="get" resultType="LgUpkeephistory">
+		SELECT 
+			<include refid="lgUpkeephistoryColumns"/>
+		FROM lg_upkeephistory a
+		<include refid="lgUpkeephistoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgUpkeephistory">
+		SELECT 
+			<include refid="lgUpkeephistoryColumns"/>
+		FROM lg_upkeephistory a
+		<include refid="lgUpkeephistoryJoins"/>
+		<where>
+			<if test="machineId != null and machineId != ''">
+				AND a.machineId = #{machineId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgUpkeephistory">
+		SELECT 
+			<include refid="lgUpkeephistoryColumns"/>
+		FROM lg_upkeephistory a
+		<include refid="lgUpkeephistoryJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_upkeephistory(
+			id,
+			machineid,
+			upkeeptime,
+			orderno,
+			orderhuman,
+			upkeepinfo
+		) VALUES (
+			#{id},
+			#{machineId},
+			#{upkeepTime},
+			#{orderNo},
+			#{orderHuman},
+			#{upkeepInfo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_upkeephistory SET 	
+			machineid = #{machineId},
+			upkeeptime = #{upkeepTime},
+			orderno = #{orderNo},
+			orderhuman = #{orderHuman},
+			upkeepinfo = #{upkeepInfo}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_upkeephistory
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

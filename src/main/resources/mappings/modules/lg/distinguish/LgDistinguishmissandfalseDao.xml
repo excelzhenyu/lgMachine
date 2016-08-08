@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.distinguish.LgDistinguishmissandfalseDao">
+    
+	<sql id="lgDistinguishmissandfalseColumns">
+		a.id AS "id",
+		a.solutiontype AS "solutionType",
+		a.solutionname AS "solutionName",
+		a.isvalid AS "isValid",
+		a.remark AS "remark"
+	</sql>
+	
+	<sql id="lgDistinguishmissandfalseJoins">
+	</sql>
+    
+	<select id="get" resultType="LgDistinguishmissandfalse">
+		SELECT 
+			<include refid="lgDistinguishmissandfalseColumns"/>
+		FROM lg_distinguishmissandfalse a
+		<include refid="lgDistinguishmissandfalseJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgDistinguishmissandfalse">
+		SELECT 
+			<include refid="lgDistinguishmissandfalseColumns"/>
+		FROM lg_distinguishmissandfalse a
+		<include refid="lgDistinguishmissandfalseJoins"/>
+		<where>
+			
+			<if test="solutionName != null and solutionName != ''">
+				AND a.solutionname = #{solutionName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgDistinguishmissandfalse">
+		SELECT 
+			<include refid="lgDistinguishmissandfalseColumns"/>
+		FROM lg_distinguishmissandfalse a
+		<include refid="lgDistinguishmissandfalseJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_distinguishmissandfalse(
+			id,
+			solutiontype,
+			solutionname,
+			isvalid,
+			remark
+		) VALUES (
+			#{id},
+			#{solutionType},
+			#{solutionName},
+			#{isValid},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_distinguishmissandfalse SET 	
+			solutiontype = #{solutionType},
+			solutionname = #{solutionName},
+			isvalid = #{isValid},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_distinguishmissandfalse
+		WHERE id = #{id}
+	</update>
+	
+	<select id="checkSolutionName" resultType="LgDistinguishmissandfalse">
+		SELECT
+		<include refid="lgDistinguishmissandfalseColumns" />
+		FROM lg_distinguishmissandfalse a
+		<include refid="lgDistinguishmissandfalseJoins" />
+		WHERE a.solutionName = #{solutionName}
+		<if test="@Ognl@isNotEmpty(id)"> AND id!=#{id}</if>
+		limit 1
+	</select>
+</mapper>

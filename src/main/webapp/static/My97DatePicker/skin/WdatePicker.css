@@ -1,0 +1,8 @@
+.Wdate{border:#ccc 1px solid;height:20px;background:#fff url(datePicker.gif) no-repeat right;width:270px;background-color: #fff;}
+input.Wdate{border:#ccc 1px solid;height:20px;background:#fff url(datePicker.gif) no-repeat right;width:266px;background-color: #fff;}
+.WdateFmtErr{font-weight:bold;color:red;}
+input.input-small {
+  width: 106px;
+}
+
+

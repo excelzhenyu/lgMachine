@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.distribution.LgMachineJobReportDao">
+    
+	<select id="findList" resultType="LgMachineJobReportData">
+		select 
+			a.deviceNo,
+		    b.machineType, 
+		    b.modelNumber, 
+		    b.orderNumber,
+			a.workDate,
+		    a.oilAvg,
+		    a.sliceWorkDuration,
+		    a.runoffCount,
+		    a.city,
+		    '' AS received,    
+			c.onceRunDurationMax,
+			c.onceRunDurationMin,
+		    a.rotationlSpeedMax,
+		    a.alarmCount,
+		    b.jobWorkState,
+		    a.longitude,
+		    a.latitudes,
+		    a.province,
+		    a.address,
+		    a.position
+		from lg_deviceDateStatics a 
+			left join lg_machineprofile b on (a.deviceNo=b.code)
+			left join (
+				select max(sliceRunDuration) AS onceRunDurationMax,
+					   min(sliceRunDuration) AS onceRunDurationMin,
+		               date(sliceStart) AS workDate,
+		               deviceNo
+				from lg_deviceSliceStatics 
+				where deviceNo in 
+				<foreach item="deviceNo" index="index" collection="deviceNoList" open="(" separator="," close=")">
+					#{deviceNo}
+				</foreach>
+				and date(sliceStart) between #{runDateBegin} and #{runDateEnd}
+		        group by date(sliceStart),deviceNo
+		    ) c on (a.deviceNo=c.deviceNo and a.workDate=c.workDate)
+		where a.deviceNo in 
+			<foreach item="deviceNo" index="index" collection="deviceNoList" open="(" separator="," close=")">
+				#{deviceNo}
+			</foreach>
+		and a.workDate between #{runDateBegin} and #{runDateEnd}
+		<if test="city != null and city != ''">
+			and a.city = #{city}
+		</if>
+		order by a.deviceNo, a.workDate
+	</select>
+	
+</mapper>

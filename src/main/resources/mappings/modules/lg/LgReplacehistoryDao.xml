@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgReplacehistoryDao">
+    
+	<sql id="lgReplacehistoryColumns">
+		a.id AS "id",
+		a.machineid AS "machineId",
+		a.replacetime AS "replaceTime",
+		a.orderno AS "orderNo",
+		a.replacecode AS "replaceCode",
+		a.replacename AS "replaceName",
+		a.replacenums AS "replaceNums"
+	</sql>
+	
+	<sql id="lgReplacehistoryJoins">
+	</sql>
+    
+	<select id="get" resultType="LgReplacehistory">
+		SELECT 
+			<include refid="lgReplacehistoryColumns"/>
+		FROM lg_replacehistory a
+		<include refid="lgReplacehistoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgReplacehistory">
+		SELECT 
+			<include refid="lgReplacehistoryColumns"/>
+		FROM lg_replacehistory a
+		<include refid="lgReplacehistoryJoins"/>
+		<where>
+			<if test="machineId != null and machineId != ''">
+				AND a.machineId = #{machineId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgReplacehistory">
+		SELECT 
+			<include refid="lgReplacehistoryColumns"/>
+		FROM lg_replacehistory a
+		<include refid="lgReplacehistoryJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_replacehistory(
+			id,
+			machineid,
+			replacetime,
+			orderno,
+			replacecode,
+			replacename,
+			replacenums
+		) VALUES (
+			#{id},
+			#{machineId},
+			#{replaceTime},
+			#{orderNo},
+			#{replaceCode},
+			#{replaceName},
+			#{replaceNums}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_replacehistory SET 	
+			machineid = #{machineId},
+			replacetime = #{replaceTime},
+			orderno = #{orderNo},
+			replacecode = #{replaceCode},
+			replacename = #{replaceName},
+			replacenums = #{replaceNums}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_replacehistory
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

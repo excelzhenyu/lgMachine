@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.workcenter.dao.WorkcenterDao">
+    
+	<sql id="workcenterColumns">
+		a.id AS "id",
+		a.inserttime AS "insertTime",
+		a.name_cn AS "nameCn",
+		a.name AS "name",
+		a.group AS "group",
+		a.path AS "path",
+		a.start AS "start",
+		a.end AS "end",
+		a.parentid AS "parentId",
+		a.status AS "status",
+		a.xAxis AS "xAxis",
+		a.yAxis AS "yAxis",
+		a.runcount AS "runCount",
+		a.cronexpression AS "cronExpression"
+	</sql>
+	
+	<sql id="workcenterJoins">
+	</sql>
+    
+	<select id="get" resultType="Workcenter">
+		SELECT 
+			(SELECT PAR.NAME FROM WORKCENTER PAR WHERE PAR.ID = A.PARENTID) AS "parentName",
+			(SELECT PAR.GROUP FROM WORKCENTER PAR WHERE PAR.ID = A.PARENTID) AS "parentGroup",
+			<include refid="workcenterColumns"/>
+		FROM workcenter a
+		<include refid="workcenterJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Workcenter">
+		SELECT 
+			(SELECT PAR.NAME FROM WORKCENTER PAR WHERE PAR.ID = A.PARENTID) AS "parentName",
+			(SELECT PAR.GROUP FROM WORKCENTER PAR WHERE PAR.ID = A.PARENTID) AS "parentGroup",
+			<include refid="workcenterColumns"/>
+		FROM workcenter a
+		<include refid="workcenterJoins"/>
+		<where>
+			
+			<if test="beginInsertTime != null and endInsertTime != null and beginInsertTime != '' and endInsertTime != ''">
+				AND a.inserttime BETWEEN #{beginInsertTime} AND #{endInsertTime}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">#{name}||'%'</if>
+					<if test="dbName == 'mssql'">#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{name},'%')</if>
+			</if>
+			<if test="group != null and group != ''">
+				AND a.group LIKE 
+					<if test="dbName == 'oracle'">#{group}||'%'</if>
+					<if test="dbName == 'mssql'">#{group}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{group},'%')</if>
+			</if>
+			<if test="path != null and path != ''">
+				AND a.path = #{path}
+			</if>
+			<if test="beginStart != null and endStart != null and beginStart != '' and endStart != ''">
+				AND a.start BETWEEN #{beginStart} AND #{endStart}
+			</if>
+			<if test="beginEnd != null and endEnd != null and beginEnd != '' and endEnd != ''">
+				AND a.end BETWEEN #{beginEnd} AND #{endEnd}
+			</if>
+			<if test="parentId != null and parentId != ''">
+				AND a.parentid LIKE 
+					<if test="dbName == 'oracle'">#{parentId}||'%'</if>
+					<if test="dbName == 'mssql'">#{parentId}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{parentId},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Workcenter">
+		SELECT 
+			<include refid="workcenterColumns"/>
+		FROM workcenter a
+		<include refid="workcenterJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO workcenter(
+			id,
+			`inserttime`,
+			name,
+			`name_cn`,
+			`group`,
+			path,
+			start,
+			end,
+			parentid,
+			status,
+			cronexpression
+		) VALUES (
+			#{id},
+			#{insertTime},
+			#{name},
+			#{nameCn},
+			#{group},
+			#{path},
+			#{start},
+			#{end},
+			#{parentId},
+			#{status},
+			#{cronExpression}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE workcenter SET 	
+			inserttime = #{insertTime},
+			name = #{name},
+			`group` = #{group},
+			path = #{path},
+			start = #{start},
+			end = #{end},
+			parentid = #{parentId},
+			status = #{status},
+			runcount = #{runCount},
+			cronexpression = #{cronExpression}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateAxisByNameNGroup">
+		UPDATE workcenter SET 	
+			xAxis = #{xAxis},
+			yAxis = #{yAxis}
+		WHERE `name` = #{name}
+		  AND `group` = #{group}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM workcenter
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getAllWorkCenter" resultType="WorkCenter">
+		SELECT
+			b.description AS "groupCn",
+			<include refid="workcenterColumns"/>
+		FROM workcenter a
+		LEFT JOIN workcenter_group b ON a.`group` = b.`name`
+	</select>
+	
+	<select id="getChildrenByParent" resultType="WorkCenter">
+		SELECT 
+			<include refid="workcenterColumns"/>
+		FROM workcenter a
+		WHERE EXISTS(SELECT 1 
+					   FROM workcenter b 
+					  WHERE a.parentID LIKE CONCAT('%', b.id, '%') 
+					    AND b.name = #{parentName}
+					    AND b.group = #{parentGroup})
+	</select>
+	
+	<select id="getWorkCenter" resultType="WorkCenter">
+		SELECT
+			<include refid="workcenterColumns"/>
+		FROM workcenter a
+		<where>
+			
+			<if test="beginInsertTime != null and endInsertTime != null and beginInsertTime != '' and endInsertTime != ''">
+				AND a.inserttime BETWEEN #{beginInsertTime} AND #{endInsertTime}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="group != null and group != ''">
+				AND a.group = #{group}
+			</if>
+			<if test="path != null and path != ''">
+				AND a.path = #{path}
+			</if>
+			<if test="beginStart != null and endStart != null and beginStart != '' and endStart != ''">
+				AND a.start BETWEEN #{beginStart} AND #{endStart}
+			</if>
+			<if test="beginEnd != null and endEnd != null and beginEnd != '' and endEnd != ''">
+				AND a.end BETWEEN #{beginEnd} AND #{endEnd}
+			</if>
+			<if test="parentId != null and parentId != ''">
+				AND a.parentid = #{parentId}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<update id="updateStatusByNameNGroup">
+		UPDATE workcenter SET 	
+			status = #{status}
+		 WHERE `name` = #{name}
+		   AND `group` = #{group}
+	</update>
+	
+	<update id="deleteByNameNGroup">
+		DELETE FROM workcenter
+		 WHERE `name` = #{name}
+		   AND `group` = #{group}
+	</update>
+	
+	<select id="getNameListByGroup" resultType="String">
+		SELECT
+			a.`name`
+		FROM workcenter a
+		<where>
+			<if test="group != null and group != ''">
+				AND a.group = #{group}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

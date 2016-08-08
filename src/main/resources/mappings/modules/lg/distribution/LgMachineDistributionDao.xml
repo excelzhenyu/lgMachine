@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.distribution.LgMachineDistributionDao">
+    <sql id="lgMachineDistributionByProvinceColumns">
+		a.id AS "id",
+		a.yearmonthid AS "yearMonthId",
+		a.yearmonthname AS "yearMonthName",
+		a.machinetype AS "machineType",
+		a.provinceno AS "provinceNo",
+		a.provincename AS "provinceName",
+		a.provincemachinerunduration_avg AS "provinceMachineRunDurationAvg",
+		a.provincemachinerunduration_sum AS "provinceMachineRunDurationSum",
+		a.provincemachineruntimes_avg AS "provinceMachineRunTimesAvg",
+		a.provincemachineruntimes_sum AS "provinceMachineRunTimesSum",
+		a.provincemachine_sum AS "provinceMachineSum",
+		a.inserttime AS "insertTime"
+		
+	</sql>
+	
+	<sql id="lgMachineDistributionByProvinceJoins">
+	</sql>
+	
+	<insert id="saveMachineOrderDistributionByCity">
+		insert into lg_machineorderdistributionbycity
+		select replace(uuid(),'-','') as id,
+			d.workmonthid as yearmonthid,d.workmonthname as yearmonthname,
+			d.machinetype, d.producttype, d.ordernumber,d.province as provinceno, d.citycode as levelcityno , d.city as levelcityname, 
+			round(sum(d.slicerunduration)/sum(1),0) as citymachinerunduration_avg, 
+			sum(d.slicerunduration) as citymachinerunduration_sum,
+			sum(d.sliceworkduration) as citymachineworkduration_sum, 
+			round(sum(d.runoffcount)/sum(1),2) as citymachineruntimes_avg,
+			sum(d.runoffcount) as citymachineruntimes_sum,sum(1) as citymachine_sum,
+			sysdate() as inserttime
+			from (
+				select 
+					t.deviceno,t.workmonthid,t.workmonthname, t.slicerunduration, t.sliceworkduration,t.runoffcount, t.city, f.citycode as province,
+					t.ordernumber,
+					c.machinetype, c.producttype,
+					e.citycode
+				from (select 
+					a.deviceno,a.workmonthid,a.workmonthname, a.slicerunduration, a.sliceworkduration,a.runoffcount, a.city,a.province,
+					b.ordernumber
+					from 
+						lg_devicemonthstatics a
+					left join 
+						lg_machineprofile b 
+						on a.deviceno=b.code 
+					where 
+						 a.workmonthid = #{monthId}
+				) t 
+				left join 
+					lg_machinetype c
+					on t.ordernumber = c.ordernumber 
+				left join 
+					lg_mapcity e
+					on t.city = e.cityname 
+				left join 
+					lg_mapcity f
+					on t.province = f.cityname 
+			) d 
+		group by d.ordernumber, d.city, d.province
+		
+		
+	</insert>
+	
+	<insert id="saveMachineOrderDistributionByProvince">
+		insert into lg_machineorderdistributionbyprovince
+		select 
+				replace(uuid(),'-','') as id,
+				b.yearmonthid,
+				b.yearmonthname,
+				b.machinetype,
+				b.producttype,
+				b.machineorder,
+				b.provinceno,
+				c.cityname as provincename,
+				b.provincemachinerunduration_avg,
+				b.provincemachinerunduration_sum,
+				b.provincemachineruntimes_avg,
+				b.provincemachineruntimes_sum,
+				b.provincemachine_sum,
+				sysdate()
+		from (
+			select 
+			    a.yearmonthid,
+			    a.yearmonthname,
+			    a.machinetype,
+			    a.producttype,
+	            a.machineorder,
+				a.provinceno,
+			    round(sum(a.citymachinerunduration_avg)/sum(1), 0) as provincemachinerunduration_avg,
+			    sum(a.citymachinerunduration_sum) as provincemachinerunduration_sum,
+			    round(sum(a.citymachineruntimes_avg)/sum(1), 2) as provincemachineruntimes_avg,
+			    sum(a.citymachineruntimes_sum) as provincemachineruntimes_sum,
+			    sum(a.citymachine_sum)  as provincemachine_sum
+			from lg_machineorderdistributionbycity a 
+				where a.yearmonthid = #{monthId}
+			group by a.machinetype,a.producttype,a.machineorder,a.provinceno
+		) b
+		left join lg_mapcity c
+			on b.provinceno = c.citycode
+	</insert>
+	
+	
+	<insert id="saveProductTypeDistributionByCity">
+	insert into lg_producttypedistributionbycity
+		select 
+			replace(uuid(),'-','') as id,
+		    a.yearmonthid,
+			a.yearmonthname,
+			a.machinetype,
+			a.producttype,
+		    a.provinceno,
+		    a.levelcityno,
+		    a.levelcityname,
+		    round(sum(a.citymachinerunduration_avg)/sum(1), 0) as citymachinerunduration_avg,
+		    sum(a.citymachinerunduration_sum) as citymachinerunduration_sum,
+		    sum(a.citymachineworkduration_sum) as citymachineworkduration_sum,
+		    round(sum(a.citymachineruntimes_avg)/sum(1), 2) as citymachineruntimes_avg,
+		    sum(a.citymachineruntimes_sum) as citymachineruntimes_sum,
+		    sum(a.citymachine_sum)  as citymachine_sum,
+		    sysdate()
+		from lg_machineorderdistributionbycity a 
+		where a.yearmonthid = #{monthId}
+		group by a.machinetype,a.producttype,a.levelcityno, a.levelcityno, a.levelcityname
+	</insert>
+	
+	<insert id="saveProductTypeDistributionByProvince">
+		insert into lg_producttypedistributionbyprovince
+		select 
+			replace(uuid(),'-','') as id,
+			b.yearmonthid,
+			b.yearmonthname,
+			b.machinetype,
+			b.producttype,
+			b.provinceno,
+			c.cityname as provincename,
+			b.provincemachinerunduration_avg,
+			b.provincemachinerunduration_sum,
+			b.provincemachineruntimes_avg,
+			b.provincemachineruntimes_sum,
+			b.provincemachine_sum,
+			sysdate()
+			from (
+				select 
+				    a.yearmonthid,
+					a.yearmonthname,
+					a.machinetype,
+					a.producttype,
+					a.provinceno,
+				    round(sum(a.citymachinerunduration_avg)/sum(1), 0) as provincemachinerunduration_avg,
+				    sum(a.citymachinerunduration_sum) as provincemachinerunduration_sum,
+				    round(sum(a.citymachineruntimes_avg)/sum(1), 2) as provincemachineruntimes_avg,
+				    sum(a.citymachineruntimes_sum) as provincemachineruntimes_sum,
+				    sum(a.citymachine_sum)  as provincemachine_sum
+				from lg_producttypedistributionbycity a 
+					where a.yearmonthid = #{monthId}
+				group by a.machinetype,a.producttype,a.provinceno
+			) b
+			left join lg_mapcity c
+				on b.provinceno = c.citycode
+				
+	</insert>
+	
+	<insert id="saveMachineTypeDistributionByCity">
+		insert into lg_machinedistributionbycity
+		select 
+			replace(uuid(),'-','') as id,
+		    a.yearmonthid,
+		    a.yearmonthname,
+		    a.machinetype,
+		    a.provinceno,
+		    a.levelcityno,
+		    a.levelcityname,
+		    round(sum(a.citymachinerunduration_avg)/sum(1), 0) as citymachinerunduration_avg,
+		    sum(a.citymachinerunduration_sum) as citymachinerunduration_sum,
+		    sum(a.citymachineworkduration_sum) as citymachineworkduration_sum,
+		    round(sum(a.citymachineruntimes_avg)/sum(1), 2) as citymachineruntimes_avg,
+		    sum(a.citymachineruntimes_sum) as citymachineruntimes_sum,
+		    sum(a.citymachine_sum)  as citymachine_sum,
+		    sysdate()
+		from lg_producttypedistributionbycity a 
+		where a.yearmonthid = #{monthId} 
+		group by a.machinetype, a.provinceno, a.levelcityno,a.levelcityname
+				
+	</insert>
+	
+	<insert id="saveMachineTypeDistributionByProvince">
+		insert into lg_machinedistributionbyprovince
+		select 
+		  replace(uuid(),'-','') as id,
+		  b.yearmonthid,
+		  b.yearmonthname,
+		  b.machinetype,
+		  b.provinceno,
+		  c.cityname as provincename,
+		  b.provincemachinerunduration_avg,
+		  b.provincemachinerunduration_sum,
+		  b.provincemachineruntimes_avg,
+		  b.provincemachineruntimes_sum,
+		  b.provincemachine_sum,
+		  sysdate()
+		from (
+		  select 
+		    a.yearmonthid,
+		    a.yearmonthname,
+		    a.machinetype,
+		    a.provinceno,
+		    round(sum(a.citymachinerunduration_avg)/sum(1), 0) as provincemachinerunduration_avg,
+		    sum(a.citymachinerunduration_sum) as provincemachinerunduration_sum,
+		    round(sum(a.citymachineruntimes_avg)/sum(1), 2) as provincemachineruntimes_avg,
+		    sum(a.citymachineruntimes_sum) as provincemachineruntimes_sum,
+		    sum(a.citymachine_sum)  as provincemachine_sum
+		    from lg_machinedistributionbycity a 	
+		      where a.yearmonthid = #{monthId}
+		    group by a.machinetype,a.provinceno
+		) b
+		left join lg_mapcity c
+		  on b.provinceno = c.citycode
+	</insert>	
+	
+	<insert id="saveMachineTypeDistributionByCountry"> 
+		insert into lg_machinedistributionbycountry
+		select 
+			replace(uuid(),'-','') as id,
+			a.yearmonthid,
+		    a.yearmonthname,
+			a.machinetype,
+			round(sum(a.provincemachinerunduration_avg)/sum(1), 0) as countrymachinerunduration_avg,
+			sum(a.provincemachinerunduration_sum) as countrymachinerunduration_sum,
+			round(sum(a.provincemachineruntimes_avg)/sum(1), 2) as countrymachineruntimes_avg,
+			sum(a.provincemachineruntimes_sum) as countrymachineruntimes_sum,
+			sum(a.provincemachine_sum)  as countrymachine_sum,
+			sysdate()
+			from lg_machinedistributionbyprovince a 	
+				where a.yearmonthid = #{monthId}
+			group by a.machinetype
+				
+	</insert>
+	
+	
+	
+	<select id="getCityMachineTypeData" resultType="LgMachineDistributionData"> 
+		select 
+			a.machineType AS dataType,
+			a.levelCityNo AS cityNo,
+			a.levelCityName AS cityName,
+			a.citymachinerunduration_avg AS runDurationAvg,
+			a.citymachinerunduration_sum AS runDurationSum,
+			a.citymachineruntimes_avg AS runTimesAvg,
+			a.citymachineruntimes_sum AS runTimesSum,
+			a.citymachine_sum AS machineSum
+		from lg_machinedistributionbycity a
+			where a.machineType = #{machineType}
+			and a.yearmonthid = #{monthId}
+			and EXISTS (select 1 from lg_mapcity b where a.provinceNo=b.cityCode and b.cityName=#{location})
+		group by a.machineType,a.levelCityNo,a.levelCityName
+	</select>
+	
+	<select id="getProvinceMachineTypeData" resultType="LgMachineDistributionData"> 
+		select 
+			a.machineType AS dataType,
+			a.provinceNo AS cityNo,
+			a.provinceName AS cityName,
+			a.provincemachinerunduration_avg AS runDurationAvg,
+			a.provincemachinerunduration_sum AS runDurationSum,
+			a.provincemachineruntimes_avg AS runTimesAvg,
+			a.provincemachineruntimes_sum AS runTimesSum,
+			a.provincemachine_sum AS machineSum
+		from lg_machinedistributionbyprovince a
+			where a.machineType = #{machineType}
+			and a.yearmonthid = #{monthId}
+		group by a.machineType,a.provinceNo,a.provinceName
+	</select>
+	
+	<select id="getCityProductTypeData" resultType="LgMachineDistributionData"> 
+		select 
+			a.productType AS dataType,
+			a.levelCityNo AS cityNo,
+			a.levelCityName AS cityName,
+			a.citymachinerunduration_avg AS runDurationAvg,
+			a.citymachinerunduration_sum AS runDurationSum,
+			a.citymachineruntimes_avg AS runTimesAvg,
+			a.citymachineruntimes_sum AS runTimesSum,
+			a.citymachine_sum AS machineSum
+		from lg_producttypedistributionbycity a
+			where a.machineType = #{machineType}
+			and a.productType = #{productType}
+			and a.yearmonthid = #{monthId}
+			and EXISTS (select 1 from lg_mapcity b where a.provinceNo=b.cityCode and b.cityName=#{location})
+		group by a.machineType,a.productType,a.levelCityNo,a.levelCityName
+	</select>
+	
+	<select id="getProvinceProductTypeData" resultType="LgMachineDistributionData"> 
+		select 
+			a.productType AS dataType,
+			a.provinceNo AS cityNo,
+			a.provinceName AS cityName,
+			a.provincemachinerunduration_avg AS runDurationAvg,
+			a.provincemachinerunduration_sum AS runDurationSum,
+			a.provincemachineruntimes_avg AS runTimesAvg,
+			a.provincemachineruntimes_sum AS runTimesSum,
+			a.provincemachine_sum AS machineSum
+		from lg_producttypedistributionbyprovince a
+			where a.machineType = #{machineType}
+			and a.productType = #{productType}
+			and a.yearmonthid = #{monthId}
+		group by a.machineType,a.productType,a.provinceNo,a.provinceName
+	</select>
+	
+	<select id="getCityMachineOrderData" resultType="LgMachineDistributionData"> 
+		select 
+			a.machineorder AS dataType,
+			a.levelCityNo AS cityNo,
+			a.levelCityName AS cityName,
+			a.citymachinerunduration_avg AS runDurationAvg,
+			a.citymachinerunduration_sum AS runDurationSum,
+			a.citymachineruntimes_avg AS runTimesAvg,
+			a.citymachineruntimes_sum AS runTimesSum,
+			a.citymachine_sum AS machineSum
+		from lg_machineorderdistributionbycity a
+			where a.machineType = #{machineType}
+			and a.productType = #{productType}
+			and a.machineorder = #{orderNumber}
+			and a.yearmonthid = #{monthId}
+			and EXISTS (select 1 from lg_mapcity b where a.provinceNo=b.cityCode and b.cityName=#{location})
+		group by a.machineType,a.productType,a.machineorder,a.levelCityNo,a.levelCityName
+	</select>
+	
+	<select id="getProvinceMachineOrderData" resultType="LgMachineDistributionData"> 
+		select 
+			a.machineorder AS dataType,
+			a.provinceNo AS cityNo,
+			a.provinceName AS cityName,
+			a.provincemachinerunduration_avg AS runDurationAvg,
+			a.provincemachinerunduration_sum AS runDurationSum,
+			a.provincemachineruntimes_avg AS runTimesAvg,
+			a.provincemachineruntimes_sum AS runTimesSum,
+			a.provincemachine_sum AS machineSum
+		from lg_machineorderdistributionbyprovince a
+			where a.machineType = #{machineType}
+			and a.productType = #{productType}
+			and a.machineorder = #{orderNumber}
+			and a.yearmonthid = #{monthId}
+		group by a.machineType,a.productType,a.machineorder,a.provinceNo,a.provinceName
+
+	</select>
+	
+	<select id="getMapMachineNumBar" resultType="LgMachineDistributionByProvince">
+		SELECT 
+			<include refid="lgMachineDistributionByProvinceColumns"/>
+		FROM lg_machinedistributionbyprovince a
+		<include refid="lgMachineDistributionByProvinceJoins"/>
+		<where>
+			AND machinetype = #{machineType}
+			AND provincename = #{provinceName}
+			And yearmonthid in 
+			<foreach item="monthId" index="index" collection="queryMap.list" open="(" separator="," close=")">
+				#{monthId}
+			</foreach>
+		</where>
+	</select>
+</mapper>

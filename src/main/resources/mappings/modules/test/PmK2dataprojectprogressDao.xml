@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.test.dao.PmK2dataprojectprogressDao">
+    
+	<sql id="pmK2dataprojectprogressColumns">
+		a.id AS "id",
+		a.projectname AS "projectName",
+		a.functionname AS "functionName",
+		a.developer AS "developer",
+		a.completiontime AS "completionTime",
+		a.istest AS "isTest",
+		a.ispush AS "isPush",
+		a.isaccept AS "isAccept",
+		a.remark AS "remark"
+	</sql>
+	
+	<sql id="pmK2dataprojectprogressJoins">
+	</sql>
+    
+	<select id="get" resultType="PmK2dataprojectprogress">
+		SELECT 
+			<include refid="pmK2dataprojectprogressColumns"/>
+		FROM pm_k2dataprojectprogress a
+		<include refid="pmK2dataprojectprogressJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PmK2dataprojectprogress">
+		SELECT 
+			<include refid="pmK2dataprojectprogressColumns"/>
+		FROM pm_k2dataprojectprogress a
+		<include refid="pmK2dataprojectprogressJoins"/>
+		<where>
+			
+			<if test="projectName != null and projectName != ''">
+				AND a.projectname = #{projectName}
+			</if>
+			<if test="functionName != null and functionName != ''">
+				AND a.functionname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{functionName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{functionName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{functionName},'%')</if>
+			</if>
+			<if test="developer != null and developer != ''">
+				AND a.developer = #{developer}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PmK2dataprojectprogress">
+		SELECT 
+			<include refid="pmK2dataprojectprogressColumns"/>
+		FROM pm_k2dataprojectprogress a
+		<include refid="pmK2dataprojectprogressJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pm_k2dataprojectprogress(
+			id,
+			projectname,
+			functionname,
+			developer,
+			completiontime,
+			istest,
+			ispush,
+			isaccept,
+			remark
+		) VALUES (
+			#{id},
+			#{projectName},
+			#{functionName},
+			#{developer},
+			#{completionTime},
+			#{isTest},
+			#{isPush},
+			#{isAccept},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pm_k2dataprojectprogress SET 	
+			projectname = #{projectName},
+			functionname = #{functionName},
+			developer = #{developer},
+			completiontime = #{completionTime},
+			istest = #{isTest},
+			ispush = #{isPush},
+			isaccept = #{isAccept},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM pm_k2dataprojectprogress
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

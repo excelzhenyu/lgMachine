@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgMachineprofileDao">
+    
+	<sql id="lgMachineprofileColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.pincode AS "pinCode",
+		a.shortname AS "shortName",
+		a.name AS "name",
+		a.enname AS "enName",
+		a.modelnumber AS "modelNumber",
+		a.ordernumber AS "orderNumber",
+		a.machinetype AS "machineType",
+		a.certificationnumber AS "certificationNumber",
+		a.machinestatus AS "machineStatus",
+		a.statusdetail AS "statusDetail",
+		a.productdate AS "productDate",
+		a.servicefilenumber AS "serviceFileNumber",
+		a.filecreatedate AS "fileCreatedate",
+		a.bookbuildingid AS "bookBuildingId",
+		a.saleareaid AS "saleAreaId",
+		a.saletype AS "saleType",
+		a.saleunitid AS "saleUnitId",
+		a.saledate AS "saleDate",
+		a.customerid AS "customerId",
+		a.productfactoryid AS "productFactoryId",
+		a.batchnumber AS "batchNumber",
+		a.producttype AS "productType",
+		a.smartterminalornot AS "smartTerminalOrNot",
+		a.transmitcode AS "transmitCode",
+		a.stopservicemark AS "stopServiceMark",
+		a.imgUrl AS "imgUrl",
+		a.labMark AS "labMark",
+		a.labStartTime AS "labStartTime",
+		a.labEndTime AS "labEndTime"
+	</sql>
+	
+	<sql id="lgMachineprofileJoins">
+	</sql>
+    
+	<select id="get" resultType="LgMachineprofile">
+		SELECT 
+			<include refid="lgMachineprofileColumns"/>
+		FROM lg_machineprofile a
+		<include refid="lgMachineprofileJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getProfileVO" resultType="LgMachineprofileVO">
+		SELECT 
+		a.*,b.dimensionName as "customerName",c.dimensionName as "bookBuildingName",d.dimensionName as "saleUnitName",
+			<include refid="lgMachineprofileColumns"/>
+		FROM lg_machineprofile a
+		<include refid="lgMachineprofileJoins"/>
+		left join lg_machinedimension b on a.customerId = b.id
+		left join lg_machinedimension c on a.bookBuildingId = c.id
+		left join lg_machinedimension d on a.saleUnitId=d.id
+		<where>
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMachineNoList"  resultType="java.lang.String">
+		select code from lg_machineprofile
+		<where>
+		<if test="machineType  !=null and machineType.length!=0">
+			AND machineType  in
+		<foreach item="item" index="index" collection="machineType" open="(" separator="," close=")">  
+ 			 #{item}  
+ 		</foreach>
+ 		</if>
+		</where>
+
+	</select>
+	
+	<select id="getMachineSaled" resultType="LgMachineprofileVO">
+		select 
+		<include refid="lgMachineprofileColumns"/>,b.dimensionName as "customerName"
+		 from lg_machineprofile a
+		 left join lg_machinedimension b on a.customerId = b.id
+		  where machineStatus = 0
+		 
+	</select>
+	
+	<select id="getMachineSaling" resultType="LgMachineprofileVO">
+		select 
+		<include refid="lgMachineprofileColumns"/>,b.dimensionName as "customerName"
+		 from lg_machineprofile  a
+		  left join lg_machinedimension b on a.customerId = b.id
+		 where machineStatus= 2
+	</select>
+	
+	<select id="getId" resultType="java.lang.String">
+		select id from lg_machineprofile a where a.code=#{deviceNo}
+	</select>
+	
+	<select id="findList" resultType="LgMachineprofileVO">
+		SELECT 
+			a.*,b.dimensionName as "customerName",c.dimensionName as "bookBuildingName",d.dimensionName as "saleUnitName"
+		FROM lg_machineprofile a
+		<include refid="lgMachineprofileJoins"/>
+		left join lg_machinedimension b on a.customerId = b.id
+		left join lg_machinedimension c on a.bookBuildingId = c.id
+		left join lg_machinedimension d on a.saleUnitId=d.id
+		<where>		
+			<if test="shortName != null and shortName != ''">
+				AND a.shortName LIKE 
+					<if test="dbName == 'oracle'">'%'||#{shortName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{shortName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{shortName},'%')</if>
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code LIKE
+					<if test="dbName == 'oracle'">'%'||#{code}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{code}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{code},'%')</if>
+			</if>
+			<if test="pinCode != null and pinCode != ''">
+				AND a.pinCode LIKE
+					<if test="dbName == 'oracle'">'%'||#{pinCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{pinCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{pinCode},'%')</if>
+			</if>
+			<if test="machineType != null and machineType != ''">
+				AND a.machineType LIKE
+					<if test="dbName == 'oracle'">'%'||#{machineType}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{machineType}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{machineType},'%')</if>
+			</if>
+			<if test="modelNumber != null and modelNumber != ''">
+				AND a.modelNumber LIKE
+					<if test="dbName == 'oracle'">'%'||#{modelNumber}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{modelNumber}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{modelNumber},'%')</if>
+			</if>
+			<if test="orderNumber != null and orderNumber != ''">
+				AND a.orderNumber LIKE
+					<if test="dbName == 'oracle'">'%'||#{orderNumber}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{orderNumber}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{orderNumber},'%')</if>
+			</if>
+			<if test="saleUnitId != null and saleUnitId != ''">
+				AND a.saleUnitId LIKE
+					<if test="dbName == 'oracle'">'%'||#{saleUnitId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{saleUnitId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{saleUnitId},'%')</if>
+			</if>
+			<if test="queryMap != null and queryMap.size() > 0 and queryMap.isExpt != null and queryMap.isExpt != ''">
+				and EXISTS (
+					select 1 machineid from lg_exptmachinepickdetail e where EXISTS (
+						select 1 from lg_exptmachinepick f  where e.pickid=f.id
+					)
+					and a.id=e.machineid
+				)
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgMachineprofile">
+		SELECT 
+			<include refid="lgMachineprofileColumns"/>
+		FROM lg_machineprofile a
+		<include refid="lgMachineprofileJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_machineprofile(
+			id,
+			code,
+			pincode,
+			shortname,
+			name,
+			enname,
+			modelnumber,
+			ordernumber,
+			machinetype,
+			certificationnumber,
+			machinestatus,
+			statusdetail,
+			productdate,
+			servicefilenumber,
+			filecreatedate,
+			bookbuildingid,
+			saleareaid,
+			saletype,
+			saleunitid,
+			saledate,
+			customerid,
+			productfactoryid,
+			batchnumber,
+			producttype,
+			smartterminalornot,
+			transmitcode,
+			stopservicemark,
+			imgUrl
+		) VALUES (
+			#{id},
+			#{code},
+			#{pinCode},
+			#{shortName},
+			#{name},
+			#{enName},
+			#{modelNumber},
+			#{orderNumber},
+			#{machineType},
+			#{certificationNumber},
+			#{machineStatus},
+			#{statusDetail},
+			#{productDate},
+			#{serviceFileNumber},
+			#{fileCreatedate},
+			#{bookBuildingId},
+			#{saleAreaId},
+			#{saleType},
+			#{saleUnitId},
+			#{saleDate},
+			#{customerId},
+			#{productFactoryId},
+			#{batchNumber},
+			#{productType},
+			#{smartTerminalOrNot},
+			#{transmitCode},
+			#{stopServiceMark},
+			#{imgUrl}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_machineprofile SET 	
+			code = #{code},
+			pincode = #{pinCode},
+			shortname = #{shortName},
+			name = #{name},
+			enname = #{enName},
+			modelnumber = #{modelNumber},
+			ordernumber = #{orderNumber},
+			machinetype = #{machineType},
+			certificationnumber = #{certificationNumber},
+			machinestatus = #{machineStatus},
+			statusdetail = #{statusDetail},
+			productdate = #{productDate},
+			servicefilenumber = #{serviceFileNumber},
+			filecreatedate = #{fileCreatedate},
+			bookbuildingid = #{bookBuildingId},
+			saleareaid = #{saleAreaId},
+			saletype = #{saleType},
+			saleunitid = #{saleUnitId},
+			saledate = #{saleDate},
+			customerid = #{customerId},
+			productfactoryid = #{productFactoryId},
+			batchnumber = #{batchNumber},
+			producttype = #{productType},
+			smartterminalornot = #{smartTerminalOrNot},
+			transmitcode = #{transmitCode},
+			stopservicemark = #{stopServiceMark},
+			imgUrl = #{imgUrl}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_machineprofile
+		WHERE id = #{id}
+	</update>
+	
+	<select id="checkCode" resultType="LgMachineprofile">
+		SELECT
+		<include refid="lgMachineprofileColumns" />
+		FROM lg_machineprofile a
+		<include refid="lgMachineprofileJoins" />
+		WHERE a.code = #{code}
+		<if test="@Ognl@isNotEmpty(id)"> AND id!=#{id}</if>
+		limit 1
+	</select>
+	
+	<select id="checkPinCode" resultType="LgMachineprofile">
+		SELECT
+		<include refid="lgMachineprofileColumns" />
+		FROM lg_machineprofile a
+		<include refid="lgMachineprofileJoins" />
+		WHERE a.pinCode = #{pinCode}
+		<if test="@Ognl@isNotEmpty(id)"> AND id!=#{id}</if>
+		limit 1
+	</select>
+	
+	<select id="getDeviceNoList" resultType="String">
+		SELECT 
+			a.code AS "code"
+		FROM lg_machineprofile a
+	</select>
+	
+	<select id="getMachineCodeListByCondition" resultType="String"> 
+		SELECT 
+			a.code AS "code"
+		FROM lg_machineprofile a 
+		<where> 
+			<if test="machineType != null and machineType != ''">
+				AND a.machineType = #{machineType}
+			</if>
+			<if test="modelNumber != null and modelNumber != ''">
+				AND a.modelNumber = #{modelNumber}
+			</if>
+			<if test="orderNumber != null and orderNumber != ''">
+				AND a.orderNumber = #{orderNumber}
+			</if>
+		</where>
+	</select>
+
+	<select id="getMachineProfileList" resultType="LgMachineprofile">
+	    SELECT 
+            <include refid="lgMachineprofileColumns" />
+          FROM lg_machineprofile a
+        <where>
+            <if test="machineTypeMult != null and machineTypeMult.length != 0">
+                AND a.machineType IN 
+                <foreach item="item" index="index" collection="machineTypeMult" 
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="productTypeMult != null and productTypeMult.length != 0">
+                AND a.modelNumber IN 
+                <foreach item="item" index="index" collection="productTypeMult" 
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="orderNumberMult != null and orderNumberMult.length != 0">
+                AND a.orderNumber IN 
+                <foreach item="item" index="index" collection="orderNumberMult" 
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="workStateMult != null and workStateMult.length != 0">
+                AND a.jobWorkState IN 
+                <foreach item="item" index="index" collection="workStateMult" 
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="saleDateGreaterOE != null and saleDateGreaterOE !=''">
+                <![CDATA[AND a.saleDate >= #{saleDateGreaterOE}]]>
+            </if>
+            <if test="saleDateLess !='' and saleDateLess != null">
+                <![CDATA[AND a.saleDate < #{saleDateLess}]]>
+            </if>
+        </where>
+	</select>
+	
+</mapper>

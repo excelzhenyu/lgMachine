@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.workcenter.dao.WorkcenterGenJobDao">
+    
+	<sql id="workcenterGenJobColumns">
+		a.id AS "id",
+		a.job_name AS "jobName",
+		a.job_group AS "jobGroup",
+		a.function_name AS "functionName",
+		a.root_job AS "rootJob",
+		a.function_author AS "functionAuthor",
+		a.cron_expression AS "cronExpression",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="workcenterGenJobJoins">
+	</sql>
+    
+	<select id="get" resultType="WorkcenterGenJob">
+		SELECT 
+			<include refid="workcenterGenJobColumns"/>
+		FROM workcenter_gen_job a
+		<include refid="workcenterGenJobJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WorkcenterGenJob">
+		SELECT 
+			<include refid="workcenterGenJobColumns"/>
+		FROM workcenter_gen_job a
+		<include refid="workcenterGenJobJoins"/>
+		<where>
+			
+			<if test="functionName != null and functionName != ''">
+				AND a.function_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{functionName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{functionName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{functionName},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WorkcenterGenJob">
+		SELECT 
+			<include refid="workcenterGenJobColumns"/>
+		FROM workcenter_gen_job a
+		<include refid="workcenterGenJobJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO workcenter_gen_job(
+			id,
+			job_name,
+			job_group,
+			function_name,
+			root_job,
+			function_author,
+			cron_expression,
+			create_by,
+			create_date,
+			update_by,
+			update_date
+		) VALUES (
+			#{id},
+			#{jobName},
+			#{jobGroup},
+			#{functionName},
+			#{rootJob},
+			#{functionAuthor},
+			#{cronExpression},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE workcenter_gen_job SET 	
+			job_name = #{jobName},
+			job_group = #{jobGroup},
+			function_name = #{functionName},
+			root_job = #{rootJob},
+			function_author = #{functionAuthor},
+			cron_expression = #{cronExpression}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM workcenter_gen_job
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getAllWorkCenterGenJob" resultType="WorkcenterGenJob">
+		SELECT 
+			<include refid="workcenterGenJobColumns"/>
+		FROM workcenter_gen_job a
+		ORDER BY a.job_group, a.job_name
+	</select>
+	
+</mapper>

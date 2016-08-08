@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.baseinfo.LgDimDateDao">
+    
+	<sql id="lgDimDateColumns">
+		a.id AS "id",
+		a.day AS "day",
+		a.weekid AS "weekId",
+		a.weekname AS "weekName",
+		a.monthid AS "monthId",
+		a.monthname AS "monthName",
+		a.seasonid AS "seasonId",
+		a.seasonname AS "seasonName",
+		a.yearid AS "yearId",
+		a.yearname AS "yearName"
+	</sql>
+	
+	<sql id="lgDimDateJoins">
+	</sql>
+    
+	<select id="get" resultType="LgDimDate">
+		SELECT 
+			<include refid="lgDimDateColumns"/>
+		FROM lg_dimdate a
+		<include refid="lgDimDateJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgDimDate">
+		SELECT 
+			<include refid="lgDimDateColumns"/>
+		FROM lg_dimdate a
+		<include refid="lgDimDateJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgDimDate">
+		SELECT 
+			<include refid="lgDimDateColumns"/>
+		FROM lg_dimdate a
+		<include refid="lgDimDateJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_dimdate(
+			id,
+			day,
+			weekid,
+			weekname,
+			monthid,
+			monthname,
+			seasonid,
+			seasonname,
+			yearid,
+			yearname
+		) VALUES (
+			#{id},
+			#{day},
+			#{weekId},
+			#{weekName},
+			#{monthId},
+			#{monthName},
+			#{seasonId},
+			#{seasonName},
+			#{yearId},
+			#{yearName}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_dimdate SET 	
+			day = #{day},
+			weekid = #{weekId},
+			weekname = #{weekName},
+			monthid = #{monthId},
+			monthname = #{monthName},
+			seasonid = #{seasonId},
+			seasonname = #{seasonName},
+			yearid = #{yearId},
+			yearname = #{yearName}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_dimdate
+		WHERE id = #{id}
+	</update>
+	
+	<insert id="saveBatch" >
+		INSERT INTO lg_dimdate (
+			id,
+			day,
+			weekid,
+			weekname,
+			monthid,
+			monthname,
+			seasonid,
+			seasonname,
+			yearid,
+			yearname
+		) VALUES 
+		 <foreach item="list" index="index" collection="list"  separator="," >
+			(
+				#{list.id},
+				#{list.day},
+				#{list.weekId},
+				#{list.weekName},
+				#{list.monthId},
+				#{list.monthName},
+				#{list.seasonId},
+				#{list.seasonName},
+				#{list.yearId},
+				#{list.yearName}
+			)
+		</foreach>
+	</insert>
+	<select id="selectMinMaxDay" resultType="map">
+		select MIN(day) as minDay, MAX(day) as maxDay from lg_dimdate
+	</select>
+	
+	<select id="getYearList" resultType="LgDimDate">
+		SELECT
+			a.yearId AS "yearId",
+			a.yearName AS "yearName"
+		FROM lg_dimdate a
+		<where>
+		  <if test="yearGreaterOE != null and yearGreaterOE !=''">
+		      <![CDATA[AND a.yearId >= #{yearGreaterOE}]]>
+		  </if>
+		</where>
+		GROUP BY a.yearId
+		ORDER BY a.yearId
+	</select>
+</mapper>

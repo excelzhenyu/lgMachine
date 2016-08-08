@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.citylist.LgSystemCityDao">
+    
+	<sql id="lgSystemCityColumns">
+		a.id AS "id",
+		a.parentid AS "parentId",
+		a.citycode AS "cityCode",
+		a.cityname AS "cityName",
+		a.isort AS "isort",
+		a.longitude AS "longitude",
+		a.latitude AS "latitude"
+	</sql>
+	
+	<sql id="lgSystemCityJoins">
+	</sql>
+    
+	<select id="get" resultType="LgSystemCity">
+		SELECT 
+			<include refid="lgSystemCityColumns"/>
+		FROM lg_systemcity a
+		<include refid="lgSystemCityJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgSystemCity">
+		SELECT 
+			<include refid="lgSystemCityColumns"/>
+		FROM lg_systemcity a
+		<include refid="lgSystemCityJoins"/>
+		<!-- <where>
+			
+			<if test="cityCode != null and cityCode != ''">
+				AND a.citycode = #{cityCode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose> -->
+		order by parentid, isort
+	</select>
+	
+	<select id="findAllList" resultType="LgSystemCity">
+		SELECT 
+			<include refid="lgSystemCityColumns"/>
+		FROM lg_systemcity a
+		<include refid="lgSystemCityJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_systemcity(
+			id,
+			parentid,
+			citycode,
+			cityname,
+			isort
+		) select 
+			#{id},
+			#{parentId},
+			#{cityCode},
+			#{cityName},
+			IFNULL(MAX(isort),0)+1
+		from lg_systemcity where parentid = #{parentId}
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_systemcity SET 	
+			parentid = #{parentId},
+			citycode = #{cityCode},
+			cityname = #{cityName},
+			isort = #{isort}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		update lg_systemcity a left join (select isort from lg_systemcity where id = #{id}) b
+			on a.isort > b.isort set a.isort=(a.isort-1) 
+		where a.parentid=#{parentId};
+		DELETE FROM lg_systemcity WHERE id = #{id}  or parentid = #{id};
+	</update>
+	
+	<update id="movePrevB2E">
+		<![CDATA[
+			update lg_systemcity a set a.isort=(a.isort-1) where a.isort > #{nodeSort} and a.isort < #{targetSort} and a.parentid=#{newParentId};
+			update lg_systemcity a set a.isort = #{targetSort}-1 where a.id = #{nodeId};
+		]]>
+	</update>
+	<update id="moveNextB2E">
+		<![CDATA[
+			update lg_systemcity a set a.isort=(a.isort-1) where a.isort > #{nodeSort} and a.isort <= #{targetSort} and a.parentid=#{newParentId};
+			update lg_systemcity a set a.isort = #{targetSort} where a.id = #{nodeId};
+		]]>
+	</update>
+	
+	<update id="movePrevE2B">
+		<![CDATA[
+			update lg_systemcity a set a.isort=(a.isort+1) where a.isort >= #{targetSort} and a.isort < #{nodeSort} and a.parentid=#{newParentId};
+			update lg_systemcity a set a.isort = #{targetSort} where a.id = #{nodeId};
+		]]>
+	</update>
+	
+	<update id="moveNextE2B">
+		<![CDATA[
+			update lg_systemcity a set a.isort=(a.isort+1) where a.isort > #{targetSort} and a.isort < #{nodeSort} and a.parentid=#{newParentId};
+			update lg_systemcity a set a.isort = #{targetSort}+1 where a.id = #{nodeId};
+		]]>
+	</update>
+	
+	<update id="moveInner">
+		<![CDATA[
+			update lg_systemcity a set a.isort=(a.isort-1) where a.isort > #{nodeSort} and a.parentid=#{oldParentId};
+			update lg_systemcity a right join (select IFNULL(MAX(isort),0)+1 as isort from lg_systemcity where parentid = #{newParentId}) b
+				on a.id = #{nodeId} set a.isort=b.isort, a.parentid = #{newParentId};
+		]]>
+	</update>
+	
+	<update id="moveInnerPrev">
+		<![CDATA[
+			update lg_systemcity a set a.isort=(a.isort-1) where a.isort > #{nodeSort} and a.parentid=#{oldParentId};
+			update lg_systemcity a set a.isort=(a.isort+1) where a.isort >= #{targetSort} and a.parentid=#{newParentId};
+			update lg_systemcity a set a.isort = #{targetSort}, a.parentid = #{newParentId} where a.id = #{nodeId};
+		]]>
+	</update>
+	
+	<update id="moveInnerNext">
+		<![CDATA[
+			update lg_systemcity a set a.isort=(a.isort-1) where a.isort > #{nodeSort} and a.parentid=#{oldParentId};
+			update lg_systemcity a set a.isort=(a.isort+1) where a.isort > #{targetSort} and a.parentid=#{newParentId};
+			update lg_systemcity a set a.isort = #{targetSort}+1, a.parentid = #{newParentId}where a.id = #{nodeId};
+		]]>
+	</update>
+	
+	<select id="haveComparison" resultType="java.lang.Integer">
+		SELECT count(*) FROM lg_citycomparison a where a.systemcityid = #{id} and a.iseffective=1
+	</select>
+	
+	<select id="getProvinceList" resultType="LgSystemCity">
+		SELECT
+			a.id, a.cityName
+		FROM
+			lg_systemcity a
+		WHERE EXISTS (SELECT 1 FROM lg_systemcity b WHERE a.parentId = b.id AND b.parentId = "0")
+		ORDER BY a.cityName
+	</select>
+	
+	<select id="getCityList" resultType="LgSystemCity">
+        SELECT
+            a.id, a.cityName
+        FROM
+            lg_systemcity a
+        WHERE EXISTS (SELECT 1 FROM lg_systemcity b WHERE a.parentId = b.id AND b.parentId != "0")
+        ORDER BY a.cityName
+    </select>
+</mapper>

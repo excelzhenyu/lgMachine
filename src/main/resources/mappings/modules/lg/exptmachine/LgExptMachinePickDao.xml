@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.exptmachine.LgExptMachinePickDao">
+    
+	<sql id="lgExptMachinePickColumns">
+		a.id AS "id",
+		a.batchnumber AS "batchNumber",
+		a.exptgoal AS "exptGoal",
+		a.exptcontent AS "exptContent",
+		a.picktime AS "pickTime",
+		a.pickstaff AS "pickStaff",
+		a.iseffective AS "isEffective",
+		a.exptbegintime AS "exptBeginTime",
+		a.exptendtime AS "exptEndTime"
+	</sql>
+	
+	<sql id="lgExptMachinePickColumns_1">
+		a.id AS "id",
+		a.batchnumber AS "batchNumber",
+		a.exptgoal AS "exptGoal",
+		a.exptcontent AS "exptContent",
+		a.picktime AS "pickTime",
+		a.pickstaff AS "pickStaff",
+		a.iseffective AS "isEffective",
+		a.exptbegintime AS "exptBeginTime",
+		a.exptendtime AS "exptEndTime",
+		b.login_name AS "pickStaffLoginName",
+		b.name AS "pickStaffName"
+	</sql>
+	
+	<sql id="lgExptMachinePickJoins">
+	</sql>
+    
+	<select id="get" resultType="LgExptMachinePick">
+		SELECT 
+			<include refid="lgExptMachinePickColumns_1"/>
+		FROM lg_exptmachinepick a
+		<include refid="lgExptMachinePickJoins"/>
+		left join sys_user b on (a.pickstaff = b.no)
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getBatchNumberList" resultType="LgExptMachinePick">
+		select id, batchNumber from lg_exptmachinepick group by batchNumber order by batchNumber
+	</select>
+	
+	<select id="getBatchNumberStringList" resultType="java.lang.String">
+		select batchNumber from lg_exptmachinepick group by batchNumber order by batchNumber
+	</select>
+	
+	<select id="findList" resultType="LgExptMachinePick">
+		SELECT 
+			<include refid="lgExptMachinePickColumns_1"/>
+		FROM lg_exptmachinepick a
+		<include refid="lgExptMachinePickJoins"/>
+		left join sys_user b on (a.pickstaff = b.no)
+		<where>
+			
+			<if test="batchNumber != null and batchNumber != ''">
+				AND a.batchnumber = #{batchNumber}
+			</if>
+			<if test="exptGoal != null and exptGoal != ''">
+				AND a.exptGoal LIKE 
+				<if test="dbName == 'oracle'">'%'||#{exptGoal}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{exptGoal}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{exptGoal},'%')</if>
+			</if>
+			<if test="exptContent != null and exptContent != ''"> 
+				AND a.exptContent LIKE 
+				<if test="dbName == 'oracle'">'%'||#{exptContent}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{exptContent}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{exptContent},'%')</if>
+			</if>
+			<if test="pickTime != null and pickTime != ''">
+				AND a.picktime = #{pickTime}
+			</if>
+			<if test="pickStaff != null and pickStaff != ''">
+				AND a.pickstaff = #{pickStaff}
+			</if>
+			<if test="isEffective != null and isEffective != ''">
+				AND a.iseffective = #{isEffective}
+			</if>
+			<if test="exptBeginTime != null and exptBeginTime != ''">
+				AND a.exptbegintime = #{exptBeginTime}
+			</if>
+			<if test="exptEndTime != null and exptEndTime != ''">
+				AND a.exptendtime = #{exptEndTime}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgExptMachinePick">
+		SELECT 
+			<include refid="lgExptMachinePickColumns_1"/>
+		FROM lg_exptmachinepick a
+		<include refid="lgExptMachinePickJoins"/>
+		left join sys_user b on (a.pickstaff = b.no)
+		
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_exptmachinepick(
+			id,
+			batchnumber,
+			exptgoal,
+			exptcontent,
+			picktime,
+			pickstaff,
+			iseffective,
+			exptbegintime,
+			exptendtime
+		) VALUES (
+			#{id},
+			#{batchNumber},
+			#{exptGoal},
+			#{exptContent},
+			#{pickTime},
+			#{pickStaff},
+			#{isEffective},
+			#{exptBeginTime},
+			#{exptEndTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_exptmachinepick SET 	
+			batchnumber = #{batchNumber},
+			exptgoal = #{exptGoal},
+			exptcontent = #{exptContent},
+			picktime = #{pickTime},
+			pickstaff = #{pickStaff},
+			iseffective = #{isEffective},
+			exptbegintime = #{exptBeginTime},
+			exptendtime = #{exptEndTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_exptmachinepick
+		WHERE id = #{id}
+	</update>
+	
+	<select id="checkBatchNumber" resultType="LgExptMachinePick"> 
+		SELECT 
+			<include refid="lgExptMachinePickColumns"/>
+		FROM lg_exptmachinepick a
+		<include refid="lgExptMachinePickJoins"/>
+		WHERE a.batchnumber = #{batchNumber}
+		<if test="id != null and id != ''">
+				AND a.id != #{id}
+		</if>
+		<if test="dbName == 'mysql'">limit 1</if>
+	</select>
+</mapper>

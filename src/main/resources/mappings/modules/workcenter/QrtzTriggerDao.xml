@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.workcenter.dao.QrtzTriggerDao">
+    
+	<sql id="qrtzTriggerColumns">
+		A.`SCHED_NAME` AS "schedName",
+		A.`TRIGGER_NAME` AS "triggerName",
+		A.`TRIGGER_GROUP` AS "triggerGroup",
+		A.`JOB_NAME` AS "jobName",
+		A.`JOB_GROUP` AS "jobGroup",
+		A.`DESCRIPTION` AS "description",
+		A.`NEXT_FIRE_TIME` AS "nextFireTime",
+		A.`PREV_FIRE_TIME` AS "prevFireTime",
+		A.`PRIORITY` AS "priority",
+		A.`TRIGGER_STATE` AS "triggerState",
+		A.`TRIGGER_TYPE` AS "triggerType",
+		A.`START_TIME` AS "startTime",
+		A.`END_TIME` AS "endTime",
+		A.`CALENDAR_NAME` AS "calendarName",
+		A.`MISFIRE_INSTR` AS "misfireInstr",
+		A.`JOB_DATA` AS "jobData",
+		CRONT.`CRON_EXPRESSION` AS "cronExpression"
+	</sql>
+	
+	<sql id="qrtzTriggerJoins">
+		LEFT JOIN QRTZ_CRON_TRIGGERS CRONT ON A.`TRIGGER_NAME` = CRONT.`TRIGGER_NAME` 
+											AND A.`TRIGGER_GROUP` = CRONT.`TRIGGER_GROUP` 
+	</sql>
+    
+	<select id="findList" resultType="QrtzTrigger">
+		SELECT 
+			<include refid="qrtzTriggerColumns"/>
+		FROM QRTZ_TRIGGERS a
+		<include refid="qrtzTriggerJoins"/>
+		<where>
+			<if test="schedName != null and schedName != ''">
+				AND A.`SCHED_NAME` LIKE 
+					<if test="dbName == 'oracle'">#{schedName}||'%'</if>
+					<if test="dbName == 'mssql'">#{schedName}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{schedName},'%')</if>
+			</if>
+			<if test="triggerName != null and triggerName != ''">
+				AND A.`TRIGGER_NAME` LIKE 
+					<if test="dbName == 'oracle'">#{triggerName}||'%'</if>
+					<if test="dbName == 'mssql'">#{triggerName}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{triggerName},'%')</if>
+			</if>
+			<if test="triggerGroup != null and triggerGroup != ''">
+				AND A.`TRIGGER_GROUP` LIKE 
+					<if test="dbName == 'oracle'">#{triggerGroup}||'%'</if>
+					<if test="dbName == 'mssql'">#{triggerGroup}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{triggerGroup},'%')</if>
+			</if>
+			<if test="jobName != null and jobName != ''">
+				AND A.`JOB_NAME` LIKE 
+					<if test="dbName == 'oracle'">#{jobName}||'%'</if>
+					<if test="dbName == 'mssql'">#{jobName}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{jobName},'%')</if>
+			</if>
+			<if test="jobGroup != null and jobGroup != ''">
+				AND A.`JOB_GROUP` LIKE 
+					<if test="dbName == 'oracle'">#{jobGroup}||'%'</if>
+					<if test="dbName == 'mssql'">#{jobGroup}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{jobGroup},'%')</if>
+			</if>
+			<if test="description != null and description != ''">
+				AND A.`DESCRIPTION` LIKE 
+					<if test="dbName == 'oracle'">'%'|| #{description}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+ #{description}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%', #{description},'%')</if>
+			</if>
+			<if test="beginNextFireTime != null and beginNextFireTime != ''">
+				AND A.`NEXT_FIRE_TIME` <![CDATA[>=]]> #{beginNextFireTime}
+			</if>
+			<if test="endNextFireTime != null and endNextFireTime != ''">
+				AND A.`NEXT_FIRE_TIME` <![CDATA[<]]> #{endNextFireTime}
+			</if>
+			<if test="beginPrevFireTime != null and beginPrevFireTime != ''">
+				AND A.`PREV_FIRE_TIME` <![CDATA[>=]]> #{beginPrevFireTime}
+			</if>
+			<if test="endPrevFireTime != null and endPrevFireTime != ''">
+				AND A.`PREV_FIRE_TIME` <![CDATA[<]]> #{endPrevFireTime}
+			</if>
+			<if test="priority != null and priority != ''">
+				AND A.`PRIORITY` = #{priority}
+			</if>
+			<if test="triggerState != null and triggerState != ''">
+				AND A.`TRIGGER_STATE` = #{triggerState}
+			</if>
+			<if test="triggerType != null and triggerType != ''">
+				AND A.`TRIGGER_TYPE` = #{triggerType}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+</mapper>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.instancematerial.dao.LgInstancematerialDao">
+    
+	<sql id="lgInstancematerialColumns">
+		a.id AS "id",
+		a.ledgerid AS "ledgerid",
+		b.materialname AS "ledgername",
+		a.materialpin AS "materialpin",
+		a.materialnum AS "materialnum",
+		a.supplierid AS "supplierid",
+		c.dimensionname AS "suppliername",
+		a.producetime AS "producetime",
+		a.inboundtime AS "inboundtime",
+		a.suppliermaterialcode AS "suppliermaterialcode",
+		a.recivetime AS "recivetime",
+		a.deadtime AS "deadtime"
+	</sql>
+	
+	<sql id="lgInstancematerialJoins">
+		LEFT JOIN tep_materialledger b ON a.ledgerid = b.id
+		LEFT JOIN lg_machinedimension c ON a.supplierid = c.id
+	</sql>
+    
+	<select id="get" resultType="LgInstancematerial">
+		SELECT 
+			<include refid="lgInstancematerialColumns"/>
+		FROM lg_instancematerial a
+		<include refid="lgInstancematerialJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgInstancematerial">
+		SELECT 
+			<include refid="lgInstancematerialColumns"/>
+		FROM lg_instancematerial a
+		<include refid="lgInstancematerialJoins"/>
+		<where>
+			
+			<if test="ledgerid != null and ledgerid != ''">
+				AND a.ledgerid = #{ledgerid}
+			</if>
+			<if test="materialpin != null and materialpin != ''">
+				AND a.materialpin = #{materialpin}
+			</if>
+			<if test="materialnum != null and materialnum != ''">
+				AND a.materialnum = #{materialnum}
+			</if>
+			<if test="supplierid != null and supplierid != ''">
+				AND a.supplierid = #{supplierid}
+			</if>
+			<if test="beginProducetime != null and endProducetime != null and beginProducetime != '' and endProducetime != ''">
+				AND a.producetime BETWEEN #{beginProducetime} AND #{endProducetime}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgInstancematerial">
+		SELECT 
+			<include refid="lgInstancematerialColumns"/>
+		FROM lg_instancematerial a
+		<include refid="lgInstancematerialJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_instancematerial(
+			id,
+			ledgerid,
+			materialpin,
+			materialnum,
+			supplierid,
+			producetime,
+			inboundtime,
+			suppliermaterialcode,
+			recivetime,
+			deadtime
+		) VALUES (
+			#{id},
+			#{ledgerid},
+			#{materialpin},
+			#{materialnum},
+			#{supplierid},
+			#{producetime},
+			#{inboundtime},
+			#{suppliermaterialcode},
+			#{recivetime},
+			#{deadtime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_instancematerial SET 	
+			ledgerid = #{ledgerid},
+			materialpin = #{materialpin},
+			materialnum = #{materialnum},
+			supplierid = #{supplierid},
+			producetime = #{producetime},
+			inboundtime = #{inboundtime},
+			suppliermaterialcode = #{suppliermaterialcode},
+			recivetime = #{recivetime},
+			deadtime = #{deadtime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_instancematerial
+		WHERE id = #{id}
+	</update>
+	
+	<select id="checkMaterialPin" resultType="String">
+		SELECT 1 
+		FROM lg_instancematerial a
+		<where>
+			<if test="materialpin != null and materialpin != ''">
+				AND a.materialpin = #{materialpin}
+			</if>
+			<if test="ledgerid != null and ledgerid != ''">
+				AND a.ledgerid = #{ledgerid}
+			</if>
+		</where>
+		LIMIT 1
+	</select>
+	
+</mapper>

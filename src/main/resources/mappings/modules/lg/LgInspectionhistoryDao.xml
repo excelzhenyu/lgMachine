@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgInspectionhistoryDao">
+    
+	<sql id="lgInspectionhistoryColumns">
+		a.id AS "id",
+		a.machineid AS "machineId",
+		a.inspectiontime AS "inspectionTime",
+		a.inspectionno AS "inspectionNo",
+		a.orderhuman AS "orderHuman",
+		a.info AS "info",
+		a.ismaintain AS "isMaintain",
+		a.type AS "type"
+	</sql>
+	
+	<sql id="lgInspectionhistoryJoins">
+	</sql>
+    
+	<select id="get" resultType="LgInspectionhistory">
+		SELECT 
+			<include refid="lgInspectionhistoryColumns"/>
+		FROM lg_inspectionhistory a
+		<include refid="lgInspectionhistoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgInspectionhistory">
+		SELECT 
+			<include refid="lgInspectionhistoryColumns"/>
+		FROM lg_inspectionhistory a
+		<include refid="lgInspectionhistoryJoins"/>
+		<where>
+		<if test="machineId!=null and machineId!=''">
+			AND a.machineId=#{machineId}
+		</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgInspectionhistory">
+		SELECT 
+			<include refid="lgInspectionhistoryColumns"/>
+		FROM lg_inspectionhistory a
+		<include refid="lgInspectionhistoryJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_inspectionhistory(
+			id,
+			machineid,
+			inspectiontime,
+			inspectionno,
+			orderhuman,
+			info,
+			ismaintain,
+			type
+		) VALUES (
+			#{id},
+			#{machineId},
+			#{inspectionTime},
+			#{inspectionNo},
+			#{orderHuman},
+			#{info},
+			#{isMaintain},
+			#{type}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_inspectionhistory SET 	
+			machineid = #{machineId},
+			inspectiontime = #{inspectionTime},
+			inspectionno = #{inspectionNo},
+			orderhuman = #{orderHuman},
+			info = #{info},
+			ismaintain = #{isMaintain},
+			type = #{type}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_inspectionhistory
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

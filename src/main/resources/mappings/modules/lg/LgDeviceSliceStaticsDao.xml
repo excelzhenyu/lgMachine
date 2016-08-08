@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgDeviceSliceStaticsDao">
+    
+	<sql id="lgDeviceSliceStaticsColumns">
+		a.id AS "id",
+		a.inserttime AS "insertTime",
+		a.deviceno AS "deviceNo",
+		a.slicecount AS "sliceCount",
+		a.slicestart AS "sliceStart",
+		a.slicestop AS "sliceStop",
+		a.slicerunduration AS "sliceRunDuration",
+		a.sliceworkduration AS "sliceWorkDuration",
+		a.latitudes AS "latitudes",
+		a.longitude AS "longitude",
+		a.province AS "province",
+		a.city AS "city",
+		a.address AS "address",
+		a.position AS "position",
+		a.alarmcount AS "alarmCount"
+	</sql>
+	
+	<sql id="lgDeviceSliceStaticsJoins">
+	</sql>
+    
+	<select id="get" resultType="LgDeviceSliceStatics">
+		SELECT 
+			<include refid="lgDeviceSliceStaticsColumns"/>
+		FROM lg_deviceslicestatics a
+		<include refid="lgDeviceSliceStaticsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgDeviceSliceStatics">
+		SELECT 
+			<include refid="lgDeviceSliceStaticsColumns"/>
+		FROM lg_deviceslicestatics a
+		<include refid="lgDeviceSliceStaticsJoins"/>
+		<where>
+			
+			<if test="insertTime != null and insertTime != ''">
+				AND a.inserttime = #{insertTime}
+			</if>
+			<if test="deviceNo != null and deviceNo != ''">
+				AND a.deviceno = #{deviceNo}
+			</if>
+			<if test="sliceCount != null and sliceCount != ''">
+				AND a.slicecount = #{sliceCount}
+			</if>
+			<if test="sliceStart != null and sliceStart != ''">
+				AND a.slicestart = #{sliceStart}
+			</if>
+			<if test="sliceStop != null and sliceStop != ''">
+				AND a.slicestop = #{sliceStop}
+			</if>
+			<if test="sliceRunDuration != null and sliceRunDuration != ''">
+				AND a.slicerunduration = #{sliceRunDuration}
+			</if>
+			<if test="sliceWorkDuration != null and sliceWorkDuration != ''">
+				AND a.sliceworkduration = #{sliceWorkDuration}
+			</if>
+			<if test="latitudes != null and latitudes != ''">
+				AND a.latitudes = #{latitudes}
+			</if>
+			<if test="longitude != null and longitude != ''">
+				AND a.longitude = #{longitude}
+			</if>
+			<if test="province != null and province != ''">
+				AND a.province = #{province}
+			</if>
+			<if test="city != null and city != ''">
+				AND a.city = #{city}
+			</if>
+			<if test="address != null and address != ''">
+				AND a.address = #{address}
+			</if>
+			<if test="position != null and position != ''">
+				AND a.position = #{position}
+			</if>
+			<if test="resumeStart != null and resumeStart != ''">
+				<![CDATA[AND a.slicestart >= #{resumeStart}]]>
+			</if>
+			<if test="resumeStop != null and resumeStop != ''">
+				<![CDATA[AND a.slicestop < #{resumeStop}]]>
+			</if>
+			<if test="deviceNoMult != null and deviceNoMult.length != 0">
+				AND a.`deviceNo` IN 
+				<foreach item="item" index="index" collection="deviceNoMult" 
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+			</if>
+			<if test="workProvinceMult != null and workProvinceMult.length != 0">
+				AND a.`province` IN 
+				<foreach item="item" index="index" collection="workProvinceMult" 
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+			</if>
+			<if test="(machineType != null and machineType != '') 
+						|| (productType != null and productType != '') 
+						|| (orderNumber != null and orderNumber != '')
+						|| (dealerIdMult != null and dealerIdMult.length != 0)
+						|| (saleProvinceMult != null and saleProvinceMult.length != 0)">
+				AND EXISTS (SELECT 1 
+						  FROM lg_machineprofile b
+						 WHERE a.`deviceNo` = b.`code`
+							<if test="machineType != null and machineType != ''">
+								AND b.`machineType` = #{machineType}
+							</if>
+							<if test="productType != null and productType != ''">
+								AND b.`productType` = #{productType}
+							</if>
+							<if test="orderNumber != null and orderNumber != ''">
+								AND b.`orderNumber` = #{orderNumber}
+							</if>
+							<if test="dealerIdMult != null and dealerIdMult.length != 0">
+								AND b.`customerId` IN 
+								<foreach item="item" index="index" collection="dealerIdMult" 
+				                         open="(" separator="," close=")">
+				                    #{item}
+				                </foreach>
+							</if>
+							<if test="saleProvinceMult != null and saleProvinceMult.length != 0">
+								AND b.`saleAreaId` IN 
+								<foreach item="item" index="index" collection="saleProvinceMult" 
+                                         open="(" separator="," close=")">
+                                    #{item}
+                                </foreach>
+							</if>
+						)
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgDeviceSliceStatics">
+		SELECT 
+			<include refid="lgDeviceSliceStaticsColumns"/>
+		FROM lg_deviceslicestatics a
+		<include refid="lgDeviceSliceStaticsJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getSliceStart" resultType="java.util.Date">
+		select a.record_time from lg_slicedata a where a.acc_status='01' and a.device_num=#{deviceNum} and TIMESTAMPDIFF(MINUTE,#{latestStartTime},a.record_time) >0 order by TIMESTAMPDIFF(MINUTE,#{latestStartTime},a.record_time) limit 1
+	</select>
+	
+	<select id="getSliceEnd" resultType="java.util.Date">
+		select a.record_time from lg_slicedata a where a.acc_status='10' and a.device_num=#{deviceNum} and TIMESTAMPDIFF(MINUTE,#{latestStartTime},a.record_time) >0 order by TIMESTAMPDIFF(MINUTE,#{latestStartTime},a.record_time) limit 1
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Integer">
+		select count(id)  from lg_deviceslicestatics a where a.deviceNo=#{deviceNum}
+	</select>
+	
+	<select id="getLatestSliceData" resultType="SliceDataVO">
+		select latitude_num as 'latitudes' , longitude_num as 'longitude',province,city,address from lg_slicedata a where a.record_time  &gt; #{sliceStart} and a.record_time &lt;  #{sliceEnd} and a.device_num=#{deviceNum}
+		order by a.record_time desc limit 1
+	</select>
+	
+	<select id="getSliceInfo" resultType="LgDeviceSliceStatics">
+		select * from lg_deviceslicestatics where deviceNo=#{deviceNo} and sliceStart&gt;#{startTime} and sliceStop&lt;#{endTime}
+	</select>
+	<select id="getEngineTemperature" resultType="java.util.List">
+		select engine_temperature AS 'engineTemperature' from lg_slicedata a where a.record_time &gt; #{sliceStart} and a.record_time &lt; #{sliceEnd} and a.device_num=#{deviceNum} order by a.record_time
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_deviceslicestatics(
+			id,
+			inserttime,
+			deviceno,
+			slicecount,
+			slicestart,
+			slicestop,
+			slicerunduration,
+			sliceworkduration,
+			latitudes,
+			longitude,
+			province,
+			city,
+			address,
+			position,
+			alarmcount
+		) VALUES (
+			#{id},
+			sysdate(),
+			#{deviceNo},
+			#{sliceCount},
+			#{sliceStart},
+			#{sliceStop},
+			#{sliceRunDuration},
+			#{sliceWorkDuration},
+			#{latitudes},
+			#{longitude},
+			#{province},
+			#{city},
+			#{address},
+			#{position},
+			#{alarmCount}
+		)
+	</insert>
+	
+	<insert id="batchSave">
+        INSERT INTO lg_deviceslicestatics(
+            id,
+            inserttime,
+            deviceno,
+            slicecount,
+            slicestart,
+            slicestop,
+            slicerunduration,
+            sliceworkduration,
+            latitudes,
+            longitude,
+            province,
+            city,
+            address,
+            position,
+            alarmcount
+        ) VALUES 
+        <foreach collection="list" item="list" index="index" separator="," >  
+            (
+            #{list.id},
+            sysdate(),
+            #{list.deviceNo},
+            #{list.sliceCount},
+            #{list.sliceStart},
+            #{list.sliceStop},
+            #{list.sliceRunDuration},
+            #{list.sliceWorkDuration},
+            #{list.latitudes},
+            #{list.longitude},
+            #{list.province},
+            #{list.city},
+            #{list.address},
+            #{list.position},
+            #{list.alarmCount}
+        )
+        </foreach> 
+    </insert>
+	
+	<update id="update">
+		UPDATE lg_deviceslicestatics SET 	
+			inserttime = #{insertTime},
+			deviceno = #{deviceNo},
+			slicecount = #{sliceCount},
+			slicestart = #{sliceStart},
+			slicestop = #{sliceStop},
+			slicerunduration = #{sliceRunDuration},
+			sliceworkduration = #{sliceWorkDuration},
+			latitudes = #{latitudes},
+			longitude = #{longitude},
+			province = #{province},
+			city = #{city},
+			address = #{address},
+			position = #{position}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_deviceslicestatics
+		WHERE id = #{id}
+	</update>
+	
+	
+	<update id="updatePrevDay">
+		UPDATE lg_deviceslicestatics SET 	
+			inserttime = sysdate(),
+			slicestop = #{sliceStop},
+			slicerunduration = timestampdiff(MINUTE, sliceStart, #{sliceStop}),
+			sliceworkduration = timestampdiff(MINUTE,sliceStart, #{sliceStop}),
+			latitudes = #{latitudes},
+			longitude = #{longitude},
+			province = #{province},
+			city = #{city},
+			address = #{address},
+			position = #{position}
+		WHERE deviceno=#{deviceNo} and date(#{sliceStop}) > date(sliceStart)
+			and sliceStop is null
+	</update>
+	
+</mapper>

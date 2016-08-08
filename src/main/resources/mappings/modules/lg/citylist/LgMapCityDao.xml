@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.citylist.LgMapCityDao">
+    
+	<sql id="lgMapCityColumns">
+		a.id AS "id",
+		a.parentid AS "parentId",
+		a.citycode AS "cityCode",
+		a.cityname AS "cityName",
+		a.isort AS "isort"
+	</sql>
+	
+	<sql id="lgMapCityJoins">
+	</sql>
+    
+	<select id="get" resultType="LgMapCity">
+		SELECT 
+			<include refid="lgMapCityColumns"/>
+		FROM lg_mapcity a
+		<include refid="lgMapCityJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgMapCity">
+		SELECT 
+			<include refid="lgMapCityColumns"/>
+		FROM lg_mapcity a
+		<include refid="lgMapCityJoins"/>
+		<where>
+			
+		</where>
+		order by parentid, isort
+		<!-- <choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose> -->
+	</select>
+	
+	
+	<select id="findCityCode" resultType="java.lang.String">
+		SELECT 
+			<include refid="lgMapCityColumns"/>
+		FROM lg_mapcity a
+		<include refid="lgMapCityJoins"/>
+		<where>
+			<if test="cityName != null and cityName != ''"> 
+				cityName = #{cityName}
+			</if>
+		</where>
+		limit 1
+	</select>
+	
+	
+	<select id="findAllList" resultType="LgMapCity">
+		SELECT 
+			<include refid="lgMapCityColumns"/>
+		FROM lg_mapcity a
+		<include refid="lgMapCityJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_mapcity(
+			id,
+			parentid,
+			citycode,
+			cityname,
+			isort
+		) select 
+			#{id},
+			#{parentId},
+			#{cityCode},
+			#{cityName},
+			IFNULL(MAX(isort),0)+1
+		from lg_mapcity where parentid = #{parentId}
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_mapcity SET 	
+			parentid = #{parentId},
+			citycode = #{cityCode},
+			cityname = #{cityName},
+			isort = #{isort}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="delete">
+		update lg_mapCity a left join (select isort from lg_mapCity where id = #{id}) b
+			on a.isort > b.isort set a.isort=(a.isort-1) 
+		where a.parentid=#{parentId};
+		DELETE FROM lg_mapcity WHERE id = #{id}  or parentid = #{id};
+	</delete>
+	
+	<update id="movePrevB2E">
+		<![CDATA[
+			update lg_mapCity a set a.isort=(a.isort-1) where a.isort > #{nodeSort} and a.isort < #{targetSort} and a.parentid=#{newParentId};
+			update lg_mapCity a set a.isort = #{targetSort}-1 where a.id = #{nodeId};
+		]]>
+	</update>
+	<update id="moveNextB2E">
+		<![CDATA[
+			update lg_mapCity a set a.isort=(a.isort-1) where a.isort > #{nodeSort} and a.isort <= #{targetSort} and a.parentid=#{newParentId};
+			update lg_mapCity a set a.isort = #{targetSort} where a.id = #{nodeId};
+		]]>
+	</update>
+	
+	<update id="movePrevE2B">
+		<![CDATA[
+			update lg_mapCity a set a.isort=(a.isort+1) where a.isort >= #{targetSort} and a.isort < #{nodeSort} and a.parentid=#{newParentId};
+			update lg_mapCity a set a.isort = #{targetSort} where a.id = #{nodeId};
+		]]>
+	</update>
+	
+	<update id="moveNextE2B">
+		<![CDATA[
+			update lg_mapCity a set a.isort=(a.isort+1) where a.isort > #{targetSort} and a.isort < #{nodeSort} and a.parentid=#{newParentId};
+			update lg_mapCity a set a.isort = #{targetSort}+1 where a.id = #{nodeId};
+		]]>
+	</update>
+	
+	<update id="moveInner">
+		<![CDATA[
+			update lg_mapCity a set a.isort=(a.isort-1) where a.isort > #{nodeSort} and a.parentid=#{oldParentId};
+			update lg_mapCity a right join (select IFNULL(MAX(isort),0)+1 as isort from lg_mapCity where parentid = #{newParentId}) b
+				on a.id = #{nodeId} set a.isort=b.isort, a.parentid = #{newParentId};
+		]]>
+	</update>
+	
+	<update id="moveInnerPrev">
+		<![CDATA[
+			update lg_mapCity a set a.isort=(a.isort-1) where a.isort > #{nodeSort} and a.parentid=#{oldParentId};
+			update lg_mapCity a set a.isort=(a.isort+1) where a.isort >= #{targetSort} and a.parentid=#{newParentId};
+			update lg_mapCity a set a.isort = #{targetSort}, a.parentid = #{newParentId} where a.id = #{nodeId};
+		]]>
+	</update>
+	
+	<update id="moveInnerNext">
+		<![CDATA[
+			update lg_mapCity a set a.isort=(a.isort-1) where a.isort > #{nodeSort} and a.parentid=#{oldParentId};
+			update lg_mapCity a set a.isort=(a.isort+1) where a.isort > #{targetSort} and a.parentid=#{newParentId};
+			update lg_mapCity a set a.isort = #{targetSort}+1, a.parentid = #{newParentId}where a.id = #{nodeId};
+		]]>
+	</update>
+	
+	
+	<select id="haveComparison" resultType="java.lang.Integer">
+		SELECT count(*) FROM lg_citycomparison a where a.mapcityid = #{id} and a.iseffective=1
+	</select>
+	
+	<select id="getProvinceList" resultType="java.lang.String">
+		SELECT 
+			a.cityName
+		FROM lg_mapcity a where a.parentid='0'
+	</select>
+	
+	<select id="getCityListByParentName" resultType="java.lang.String">
+		SELECT
+			a.cityName
+		FROM
+			lg_mapcity a
+		WHERE EXISTS (SELECT 1 FROM lg_mapcity b WHERE a.parentId = b.id AND b.cityName = #{cityName})
+	</select>
+	
+	<select id="getLeafCityList" resultType="LgMapCity"> 
+		<![CDATA[ 
+			select 
+				citycode AS "cityCode", 
+				cityname AS "cityName" 
+			from lg_mapcity a where (parentId=0 and not exists (
+				select 1 from lg_mapcity b where a.id=b.parentId
+			)) or parentId<>0
+			order by a.citycode
+		]]>
+	</select>
+</mapper>

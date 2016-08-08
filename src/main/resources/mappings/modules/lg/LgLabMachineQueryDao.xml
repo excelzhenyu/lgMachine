@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgLabMachineQueryDao">
+    
+	<sql id="lgDeviceDateStaticsColumns">
+		a.id AS "id",
+		a.inserttime AS "inserTtime",
+		a.deviceno AS "deviceNo",
+		a.workdate AS "workDate",
+		a.workcount AS "workCount",
+		a.workbegin AS "workBegin",
+		a.workstop AS "workStop",
+		a.slicerunduration AS "sliceRunDuration",
+		a.sliceworkduration AS "sliceWorkDuration",
+		a.runoffcount AS "runoffCount",
+		a.rundurationtotal AS "runDurationTotal",
+		a.workdurationtotal AS "workDurationTotal",
+		a.runofftotal AS "runOffTotal",
+		a.oilsum AS "oilSum",
+		a.oilavg AS "oilAvg",
+		a.rotationlspeedmax AS "rotationlSpeedMax",
+		a.latitudes AS "latitudes",
+		a.longitude AS "longitude",
+		a.province AS "province",
+		a.city AS "city",
+		a.address AS "address",
+		a.position AS "position",
+		a.alarmcount AS "alarmCount"
+	</sql>
+	
+	<sql id="lgDeviceDateStaticsJoins">
+	</sql>
+    
+	<select id="get" resultType="LgDeviceDateStatics">
+		SELECT 
+			<include refid="lgDeviceDateStaticsColumns"/>
+		FROM lg_devicedatestatics a
+		<include refid="lgDeviceDateStaticsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgLabMachineQuery">
+		SELECT 
+				b.modelNumber,c.dimensionName as 'saleUnit',
+			<include refid="lgDeviceDateStaticsColumns"/>
+		FROM lg_devicedatestatics a
+		left join lg_machineprofile b on a.deviceNo=b.code
+		left join lg_machinedimension c on b.saleUnitId=c.id
+		<if test="batchNumber!=null and batchNumber!=''">
+		left join lg_exptmachinepickdetail expt on expt.machineId=(select id from lg_machineprofile pf where pf.code=a.deviceNo) 
+		left join lg_exptmachinepick pick on expt.pickId=pick.id
+		</if>
+		<include refid="lgDeviceDateStaticsJoins"/>
+		<where>
+			<if test="batchNumber!=null and batchNumber!=''">
+			AND pick.batchNumber=#{batchNumber}
+			</if>
+			<if test="machineNo != null "> 
+				AND a.deviceNo in
+				<foreach item="item" index="index" collection="machineNo" open="(" separator="," close=")">  
+ 			 #{item}  
+ 				</foreach>
+			</if>
+			<if test="workTimeDaily != null and workTimeDaily !=''">
+				AND a.sliceRunDuration &gt; #{workTimeDaily}
+			</if>
+			<if test="workTimeTotal != null and workTimeTotal !=''">
+				AND a.runDurationTotal &gt; #{workTimeTotal}
+			</if>
+			<if test="machineType !=null and machineType.length!=0">
+				AND b.machineType in 
+				<foreach item="item" index="index" collection="machineType" open="(" separator="," close=")">  
+ 			 #{item}  
+ 				</foreach>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findAllList" resultType="LgDeviceDateStatics">
+		SELECT 
+			<include refid="lgDeviceDateStaticsColumns"/>
+		FROM lg_devicedatestatics a
+		<include refid="lgDeviceDateStaticsJoins"/>
+		<where>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+				
+	<select id="getHours" parameterType="Map" resultType="java.lang.Integer">
+			select sum(sliceRunDuration) from lg_devicedatestatics where deviceNo=#{deviceNo} and workDate&gt;= #{startDate} and workDate&lt;=#{endDate}
+	</select>
+		
+	
+	<insert id="insert">
+		INSERT INTO lg_devicedatestatics(
+			id,
+			inserttime,
+			deviceno,
+			workdate,
+			workcount,
+			workbegin,
+			workstop,
+			slicerunduration,
+			sliceworkduration,
+			runoffcount,
+			rundurationtotal,
+			workdurationtotal,
+			runofftotal,
+			oilsum,
+			oilavg,
+			rotationlspeedmax,
+			latitudes,
+			longitude,
+			province,
+			city,
+			address,
+			position,
+			alarmcount
+		) VALUES (
+			#{id},
+			#{inserTtime},
+			#{deviceNo},
+			#{workDate},
+			#{workCount},
+			#{workBegin},
+			#{workStop},
+			#{sliceRunDuration},
+			#{sliceWorkDuration},
+			#{runoffCount},
+			#{runDurationTotal},
+			#{workDurationTotal},
+			#{runOffTotal},
+			#{oilSum},
+			#{oilAvg},
+			#{rotationlSpeedMax},
+			#{latitudes},
+			#{longitude},
+			#{province},
+			#{city},
+			#{address},
+			#{position},
+			#{alarmCount}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_devicedatestatics SET 	
+			inserttime = #{inserTtime},
+			deviceno = #{deviceNo},
+			workdate = #{workDate},
+			workcount = #{workCount},
+			workbegin = #{workBegin},
+			workstop = #{workStop},
+			slicerunduration = #{sliceRunDuration},
+			sliceworkduration = #{sliceWorkDuration},
+			runoffcount = #{runoffCount},
+			rundurationtotal = #{runDurationTotal},
+			workdurationtotal = #{workDurationTotal},
+			runofftotal = #{runOffTotal},
+			oilsum = #{oilSum},
+			oilavg = #{oilAvg},
+			rotationlspeedmax = #{rotationlSpeedMax},
+			latitudes = #{latitudes},
+			longitude = #{longitude},
+			province = #{province},
+			city = #{city},
+			address = #{address},
+			position = #{position},
+			alarmcount = #{alarmCount}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_devicedatestatics
+		WHERE id = #{id}
+	</update>
+	
+	
+		
+	<select id="findListByWeek" resultType="LgDeviceDateStatics">
+	<!--  
+		SELECT 
+			<include refid="lgDeviceDateStaticsColumns"/>
+		FROM lg_devicedatestatics a
+		<include refid="lgDeviceDateStaticsJoins"/>
+		<where>
+			<if test="deviceNo != null and deviceNo != ''"> 
+				And a.deviceno = #{deviceNo}
+			</if>
+			<if test="weekBegin != null and weekBegin != '' and weekEnd != null and weekEnd != ''">
+				AND a.workdate between #{weekBegin} and #{weekEnd}
+			</if>
+		</where>
+		order by workdate
+		-->
+		SELECT
+			y.id AS "id",
+			y.inserttime AS "inserTtime",
+			y.deviceno AS "deviceNo",
+			y.workdate AS "workDate",
+			x.workcount AS "workCount",
+			x.workbegin AS "workBegin",
+			x.workstop AS "workStop",
+			x.slicerunduration AS "sliceRunDuration",
+			x.sliceworkduration AS "sliceWorkDuration",
+			x.runoffcount AS "runoffCount",
+			x.oilsum AS "oilSum",
+			x.oilavg AS "oilAvg",
+			x.rotationlspeedmax AS "rotationlSpeedMax",
+			y.latitudes AS "latitudes",
+			y.longitude AS "longitude",
+			y.province AS "province",
+			y.city AS "city",
+			y.address AS "address",
+			y.position AS "position",
+			x.alarmcount AS "alarmCount"
+		FROM
+		(SELECT
+			count(1) AS workcount,
+			min(a.workbegin) AS workbegin,
+			max(a.workstop) AS workstop,
+			sum(a.slicerunduration) AS slicerunduration,
+			sum(a.sliceworkduration) AS sliceworkduration,
+			sum(a.runoffcount) AS runoffcount,
+			sum(a.oilsum) AS oilsum,
+			sum(a.oilavg)/count(1) AS oilavg,
+			max(a.rotationlspeedmax) AS rotationlspeedmax,
+			sum(a.alarmcount) AS alarmcount
+		FROM lg_deviceDateStatics a 
+		<where>
+			<if test="deviceNo != null and deviceNo != ''"> 
+				And a.deviceno = #{deviceNo}
+			</if>
+			<if test="weekBegin != null and weekBegin != '' and weekEnd != null and weekEnd != ''">
+				AND a.workdate between #{weekBegin} and #{weekEnd}
+			</if>
+		</where>	
+		<!-- WHERE a.workdate BETWEEN '2016-03-07' AND '2016-03-13' AND a.deviceno='C2000B' -->
+		GROUP BY a.deviceno ) x,
+		(
+		SELECT
+			b.id,
+			b.inserttime,
+			b.deviceno,
+			b.workdate,
+			b.latitudes,
+			b.longitude,
+			b.province,
+			b.city,
+			b.address,
+			b.position,
+			b.alarmcount
+		FROM lg_deviceDateStatics b
+		WHERE workdate = (SELECT MAX(workdate) FROM lg_deviceDateStatics 
+			<!-- WHERE workdate BETWEEN '2016-03-07' AND '2016-03-13' AND deviceno='C2000B'  -->
+			<where>
+				<if test="deviceNo != null and deviceNo != ''"> 
+					And deviceno = #{deviceNo}
+				</if>
+				<if test="weekBegin != null and weekBegin != '' and weekEnd != null and weekEnd != ''">
+					AND workdate between #{weekBegin} and #{weekEnd}
+				</if>
+			</where>	
+			LIMIT 1)
+			) y
+
+	</select>
+	
+	
+		
+	<select id="findListByDeviceAndDate" resultType="LgDeviceDateStatics">
+	<!--  
+		SELECT 
+			<include refid="lgDeviceDateStaticsColumns"/>
+		FROM lg_devicedatestatics a
+		<include refid="lgDeviceDateStaticsJoins"/>
+		<where>
+			<if test="deviceNo != null and deviceNo != ''"> 
+				And a.deviceno = #{deviceNo}
+			</if>
+			<if test="weekBegin != null and weekBegin != '' and weekEnd != null and weekEnd != ''">
+				AND a.workdate between #{weekBegin} and #{weekEnd}
+			</if>
+		</where>
+		order by workdate
+		-->
+		SELECT
+			y.id AS "id",
+			y.inserttime AS "inserTtime",
+			y.deviceno AS "deviceNo",
+			y.workdate AS "workDate",
+			x.workcount AS "workCount",
+			x.workbegin AS "workBegin",
+			x.workstop AS "workStop",
+			x.slicerunduration AS "sliceRunDuration",
+			x.sliceworkduration AS "sliceWorkDuration",
+			x.runoffcount AS "runoffCount",
+			x.oilsum AS "oilSum",
+			x.oilavg AS "oilAvg",
+			x.rotationlspeedmax AS "rotationlSpeedMax",
+			y.latitudes AS "latitudes",
+			y.longitude AS "longitude",
+			y.province AS "province",
+			y.city AS "city",
+			y.address AS "address",
+			y.position AS "position",
+			x.alarmcount AS "alarmCount"
+		FROM
+		(SELECT
+			count(1) AS workcount,
+			min(a.workbegin) AS workbegin,
+			max(a.workstop) AS workstop,
+			sum(a.slicerunduration) AS slicerunduration,
+			sum(a.sliceworkduration) AS sliceworkduration,
+			sum(a.runoffcount) AS runoffcount,
+			sum(a.oilsum) AS oilsum,
+			sum(a.oilavg)/count(1) AS oilavg,
+			max(a.rotationlspeedmax) AS rotationlspeedmax,
+			sum(a.alarmcount) AS alarmcount
+		FROM lg_deviceDateStatics a 
+		<where>
+			and a.runoffcount > 0
+			<if test="deviceNo != null and deviceNo != ''"> 
+				And a.deviceno = #{deviceNo}
+			</if>
+			<if test="dateBegin != null and dateBegin != '' and dateEnd != null and dateEnd != ''">
+				AND a.workdate between #{dateBegin} and #{dateEnd}
+			</if>
+		</where>	
+		<!-- WHERE a.workdate BETWEEN '2016-03-07' AND '2016-03-13' AND a.deviceno='C2000B' -->
+		GROUP BY a.deviceno ) x,
+		(
+		SELECT
+			b.id,
+			b.inserttime,
+			b.deviceno,
+			b.workdate,
+			b.latitudes,
+			b.longitude,
+			b.province,
+			b.city,
+			b.address,
+			b.position,
+			b.alarmcount
+		FROM lg_deviceDateStatics b
+		WHERE workdate = (SELECT MAX(workdate) FROM lg_deviceDateStatics 
+			<!-- WHERE workdate BETWEEN '2016-03-07' AND '2016-03-13' AND deviceno='C2000B'  -->
+			<where>
+				and runoffcount > 0
+				<if test="deviceNo != null and deviceNo != ''"> 
+					And deviceno = #{deviceNo}
+				</if>
+				<if test="dateBegin != null and dateBegin != '' and dateEnd != null and dateEnd != ''">
+					AND workdate between #{dateBegin} and #{dateEnd}
+				</if>
+			</where>	
+			LIMIT 1)
+			) y
+
+	</select>
+	
+</mapper>

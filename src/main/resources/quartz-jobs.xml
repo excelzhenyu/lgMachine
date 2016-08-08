@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='utf-8'?>
+<job-scheduling-data xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+  version="2.0">
+
+	<schedule>
+		<job>
+			<name>RootJob1</name>
+			<group>test_job_group</group>
+			<description>RootJob1</description>
+			<job-class>com.k2data.platform.modules.workcenter.quartz.job.RootJob1</job-class>
+		</job>
+		<trigger>
+			<cron>
+				<name>RootJob1_trigger</name>
+				<group>test_trigger_group</group>
+				<job-name>RootJob1</job-name>
+				<job-group>test_job_group</job-group>
+				<cron-expression>0 0/1 * * * ?</cron-expression>
+			</cron>
+		</trigger>
+		
+		<job>
+			<name>RootJob2</name>
+			<group>test2_job_group</group>
+			<description>RootJob2</description>
+			<job-class>com.k2data.platform.modules.workcenter.quartz.job.RootJob2</job-class>
+		</job>
+		<trigger>
+			<cron>
+				<name>RootJob2_trigger</name>
+				<group>test2_trigger_group</group>
+				<job-name>RootJob2</job-name>
+				<job-group>test2_job_group</job-group>
+				<cron-expression>0 0/1 * * * ?</cron-expression>
+			</cron>
+		</trigger>
+		
+		<job>
+			<name>RootJob3</name>
+			<group>test3_job_group</group>
+			<description>RootJob3</description>
+			<job-class>com.k2data.platform.modules.workcenter.quartz.job.RootJob3</job-class>
+		</job>
+		<trigger>
+			<cron>
+				<name>RootJob3_trigger</name>
+				<group>test3_trigger_group</group>
+				<job-name>RootJob3</job-name>
+				<job-group>test3_job_group</job-group>
+				<cron-expression>0 0/1 * * * ?</cron-expression>
+			</cron>
+		</trigger>
+		
+		<job>
+			<name>QrtzTestJob1</name>
+			<group>test_job_group</group>
+			<description>QrtzTestJob1</description>
+			<job-class>com.k2data.platform.modules.workcenter.quartz.job.QrtzTestJob1</job-class>
+			<durability>true</durability>
+			<recover>false</recover>
+		</job>
+		
+		<job>
+			<name>QrtzTestJob2</name>
+			<group>test_job_group</group>
+			<description>QrtzTestJob2</description>
+			<job-class>com.k2data.platform.modules.workcenter.quartz.job.QrtzTestJob2</job-class>
+			<durability>true</durability>
+			<recover>false</recover>
+		</job>
+		
+		<job>
+			<name>QrtzTestJob3</name>
+			<group>test_job_group</group>
+			<description>QrtzTestJob3</description>
+			<job-class>com.k2data.platform.modules.workcenter.quartz.job.QrtzTestJob3</job-class>
+			<durability>true</durability>
+			<recover>false</recover>
+		</job>
+		
+		<job>
+			<name>QrtzTestJob4</name>
+			<group>test_job_group</group>
+			<description>QrtzTestJob4</description>
+			<job-class>com.k2data.platform.modules.workcenter.quartz.job.QrtzTestJob4</job-class>
+			<durability>true</durability>
+			<recover>false</recover>
+		</job>
+	</schedule>
+</job-scheduling-data>

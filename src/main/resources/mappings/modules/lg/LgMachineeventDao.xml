@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgMachineeventDao">
+
+	<sql id="lgMachineeventColumns">
+		a.id AS "id",
+		a.machineId AS "machineId",
+		a.eventTime AS "eventTime",
+		a.eventInfo AS "eventInfo",
+		a.urlOrNot AS "urlOrNot",
+		a.url AS "url",
+		a.eventDescription AS "eventDescription",
+		a.stopRemark AS "stopRemark",
+		a.eventType AS "eventType"
+	</sql>
+
+	<sql id="lgMachineeventJoins">
+	</sql>
+
+  <select id="getEventList" resultType="java.lang.String">
+    select eventDescription from lg_machineevent where machineId=(select id from lg_machineprofile where code=#{deviceNo})
+  </select>
+
+	<select id="get" resultType="LgMachineevent">
+		SELECT
+			<include refid="lgMachineeventColumns"/>
+		FROM lg_machineevent a
+		<include refid="lgMachineeventJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="LgMachineevent">
+		SELECT
+			<include refid="lgMachineeventColumns"/>
+		FROM lg_machineevent a
+		<include refid="lgMachineeventJoins"/>
+		<where>
+			<if test="machineId != null and machineId != ''">
+				AND a.machineId = #{machineId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="LgMachineevent">
+		SELECT
+			<include refid="lgMachineeventColumns"/>
+		FROM lg_machineevent a
+		<include refid="lgMachineeventJoins"/>
+		<where>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO lg_machineevent(
+			id,
+			machineId,
+			eventTime,
+			eventInfo,
+			urlOrNot,
+			url,
+			eventDescription,
+			stopRemark,
+			eventType
+		) VALUES (
+			#{id},
+			#{machineId},
+			#{eventTime},
+			#{eventInfo},
+			#{urlOrNot},
+			#{url},
+			#{eventDescription},
+			#{stopRemark},
+			#{eventType}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE lg_machineevent SET
+			machineId = #{machineId},
+			eventTime = #{eventTime},
+			eventInfo = #{eventInfo},
+			urlOrNot = #{urlOrNot},
+			url = #{url},
+			eventDescription = #{eventDescription},
+			stopRemark = #{stopRemark}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM lg_machineevent
+		WHERE id = #{id}
+	</update>
+
+</mapper>

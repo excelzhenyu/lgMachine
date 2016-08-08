@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.slice.LgDeviceMonthStaticsDao">
+    
+	<sql id="lgDeviceMonthStaticsColumns">
+		a.id AS "id",
+		a.inserttime AS "insertTime",
+		a.deviceno AS "deviceNo",
+		a.workmonthid AS "workMonthId",
+		a.workmonthname AS "workMonthName",
+		a.workcount AS "workCount",
+		a.workbegin AS "workBegin",
+		a.workstop AS "workStop",
+		a.slicerunduration AS "sliceRunDuration",
+		a.sliceworkduration AS "sliceWorkDuration",
+		a.runoffcount AS "runOffCount",
+		a.oilsum AS "oilSum",
+		a.oilavg AS "oilAvg",
+		a.rotationlspeedmax AS "rotationlSpeedMax",
+		a.latitudes AS "latitudes",
+		a.longitude AS "longitude",
+		a.province AS "province",
+		a.city AS "city",
+		a.address AS "address",
+		a.position AS "position",
+		a.alarmcount AS "alarmCount"
+	</sql>
+	
+	<sql id="lgDeviceMonthStaticsJoins">
+	</sql>
+    
+	<select id="get" resultType="LgDeviceMonthStatics">
+		SELECT 
+			<include refid="lgDeviceMonthStaticsColumns"/>
+		FROM lg_devicemonthstatics a
+		<include refid="lgDeviceMonthStaticsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgDeviceMonthStatics">
+		SELECT 
+			<include refid="lgDeviceMonthStaticsColumns"/>
+		FROM lg_devicemonthstatics a
+		<include refid="lgDeviceMonthStaticsJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgDeviceMonthStatics">
+		SELECT 
+			<include refid="lgDeviceMonthStaticsColumns"/>
+		FROM lg_devicemonthstatics a
+		<include refid="lgDeviceMonthStaticsJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_devicemonthstatics(
+			id,
+			inserttime,
+			deviceno,
+			workmonthid,
+			workmonthname,
+			workcount,
+			workbegin,
+			workstop,
+			slicerunduration,
+			sliceworkduration,
+			runoffcount,
+			oilsum,
+			oilavg,
+			rotationlspeedmax,
+			latitudes,
+			longitude,
+			province,
+			city,
+			address,
+			position,
+			alarmcount
+		) VALUES (
+			#{id},
+			sysdate(),
+			#{deviceNo},
+			#{workMonthId},
+			#{workMonthName},
+			#{workCount},
+			#{workBegin},
+			#{workStop},
+			#{sliceRunDuration},
+			#{sliceWorkDuration},
+			#{runOffCount},
+			#{oilSum},
+			#{oilAvg},
+			#{rotationlSpeedMax},
+			#{latitudes},
+			#{longitude},
+			#{province},
+			#{city},
+			#{address},
+			#{position},
+			#{alarmCount}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_devicemonthstatics SET 	
+			inserttime = #{insertTime},
+			deviceno = #{deviceNo},
+			workmonthid = #{workMonthId},
+			workmonthname = #{workMonthName},
+			workcount = #{workCount},
+			workbegin = #{workBegin},
+			workstop = #{workStop},
+			slicerunduration = #{sliceRunDuration},
+			sliceworkduration = #{sliceWorkDuration},
+			runoffcount = #{runOffCount},
+			oilsum = #{oilSum},
+			oilavg = #{oilAvg},
+			rotationlspeedmax = #{rotationlSpeedMax},
+			latitudes = #{latitudes},
+			longitude = #{longitude},
+			province = #{province},
+			city = #{city},
+			address = #{address},
+			position = #{position},
+			alarmcount = #{alarmCount}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_devicemonthstatics
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

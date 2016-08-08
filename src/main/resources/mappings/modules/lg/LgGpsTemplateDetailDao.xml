@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgGpsTemplateDetailDao">
+    
+	<sql id="lgGpsTemplateDetailColumns">
+		a.id AS "id",
+		a.gpstemplateid AS "gpsTemplateId",
+		a.gpstemplateno AS "gpsTemplateNo",
+		a.sensormark AS "sensorMark",
+		a.sensorname AS "sensorName",
+		a.sensortype AS "sensorType"
+	</sql>
+	
+	<sql id="lgGpsTemplateDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="LgGpsTemplateDetail">
+		SELECT 
+			<include refid="lgGpsTemplateDetailColumns"/>
+		FROM lg_gpstemplatedetail a
+		<include refid="lgGpsTemplateDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getSensorList"  parameterType="java.lang.String" resultType="LgGpsTemplateDetail">
+		SELECT
+			<include refid="lgGpsTemplateDetailColumns"/>
+		FROM lg_gpstemplatedetail a
+		WHERE a.gpsTemplateNo=(SELECT b.gpsTemplateNo FROM lg_machinegpscontrast b where b.deviceNo=#{code})
+	</select>
+	
+	<select id="getSensorListAnalog"  parameterType="java.lang.String" resultType="LgGpsTemplateDetail">
+		SELECT
+			<include refid="lgGpsTemplateDetailColumns"/>
+		FROM lg_gpstemplatedetail a
+		WHERE a.gpsTemplateNo=(SELECT b.gpsTemplateNo FROM lg_machinegpscontrast b where b.deviceNo=#{device}) and a.sensorType=1
+	</select>
+	
+	<select id="getSensorListSwitch"  parameterType="java.lang.String" resultType="LgGpsTemplateDetail">
+		SELECT
+			<include refid="lgGpsTemplateDetailColumns"/>
+		FROM lg_gpstemplatedetail a
+		WHERE a.gpsTemplateNo=(SELECT b.gpsTemplateNo FROM lg_machinegpscontrast b where b.deviceNo=#{device}) and a.sensorType=2
+	</select>
+	
+	<select id="getTemplateDetailList" resultType="LgGpsTemplateDetail">
+		SELECT
+			<include refid="lgGpsTemplateDetailColumns"/>
+		FROM lg_gpstemplatedetail a
+		WHERE a.gpsTemplateNo=(SELECT b.gpsTemplateNo FROM lg_machinegpscontrast b where b.deviceNo=#{deviceNo})
+	</select>
+	
+	<select id="findList" resultType="LgGpsTemplateDetail">
+		SELECT 
+			<include refid="lgGpsTemplateDetailColumns"/>
+		FROM lg_gpstemplatedetail a
+		<include refid="lgGpsTemplateDetailJoins"/>
+		<where>
+			
+			<if test="gpsTemplateId != null and gpsTemplateId != ''">
+				AND a.gpstemplateid = #{gpsTemplateId}
+			</if>
+			<if test="gpsTemplateNo != null and gpsTemplateNo != ''">
+				AND a.gpstemplateno = #{gpsTemplateNo}
+			</if>
+			<if test="sensorMark != null and sensorMark != ''">
+				AND a.sensormark LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sensorMark}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sensorMark}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sensorMark},'%')</if>
+			</if>
+			<if test="sensorName != null and sensorName != ''">
+				AND a.sensorname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sensorName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sensorName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sensorName},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgGpsTemplateDetail">
+		SELECT 
+			<include refid="lgGpsTemplateDetailColumns"/>
+		FROM lg_gpstemplatedetail a
+		<include refid="lgGpsTemplateDetailJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_gpstemplatedetail(
+			id,
+			gpstemplateid,
+			gpstemplateno,
+			sensormark,
+			sensorname,
+			sensortype
+		) VALUES (
+			#{id},
+			#{gpsTemplateId},
+			#{gpsTemplateNo},
+			#{sensorMark},
+			#{sensorName},
+			#{sensorType}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_gpstemplatedetail SET 	
+			gpstemplateid = #{gpsTemplateId},
+			gpstemplateno = #{gpsTemplateNo},
+			sensormark = #{sensorMark},
+			sensorname = #{sensorName},
+			sensortype = #{sensorType}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_gpstemplatedetail
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteByTemplateId">
+		DELETE FROM lg_gpstemplatedetail
+		WHERE gpsTemplateId=#{gpsTemplateId}
+	</update>
+	
+	<select id="checkSensorMark" resultType="LgGpsTemplateDetail">
+		SELECT
+		<include refid="lgGpsTemplateDetailColumns" />
+		FROM lg_gpstemplatedetail a
+		<include refid="lgGpsTemplateDetailJoins" />
+		WHERE a.sensorMark = #{sensorMark}
+		AND a.gpsTemplateNo = #{gpsTemplateNo}
+		<if test="@Ognl@isNotEmpty(id)"> AND id!=#{id}</if>
+		limit 1
+	</select>
+	
+	<select id="getSensorNameList"  parameterType="java.lang.String" resultType="LgGpsTemplateDetail">
+        SELECT
+            a.id,
+            a.sensorName
+        FROM lg_gpstemplatedetail a
+        WHERE a.sensorType = '1'
+          AND a.gpsTemplateNo = (SELECT b.gpsTemplateNo FROM lg_machinegpscontrast b where b.deviceNo = #{deviceNo})
+    </select>
+	
+</mapper>

@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgSliceStaticsAnalogDao">
+    
+	<sql id="lgSliceStaticsAnalogColumns">
+		a.id AS "id",
+		a.inserttime AS "insertTime",
+		a.devicesliceid AS "deviceSliceId",
+		a.deviceno AS "deviceNo",
+		a.sensorno AS "sensorNo",
+		a.sensortype AS "sensorType",
+		a.datapointcount AS "dataPointCount",
+		a.sensordatastart AS "sensorDataStart",
+		a.sensordataend AS "sensorDataEnd",
+		a.sensordataduration AS "sensorDataDuration",
+		a.sendfrequence AS "sendFrequence",
+		a.valuemax AS "valueMax",
+		a.valuemin AS "valueMin",
+		a.valueavg AS "valueAvg",
+		a.value_5 AS "value5",
+		a.value_25 AS "value25",
+		a.value_50 AS "value50",
+		a.value_75 AS "value75",
+		a.value_95 AS "value95",
+		a.standard_std AS "standardStd",
+		a.variance_std AS "varianceStd",
+		a.skewmax AS "skewMax",
+		a.skewmin AS "skewMin",
+		a.skewavg AS "skewAvg",
+		a.skew_5 AS "skew5",
+		a.skew_25 AS "skew25",
+		a.skew_50 AS "skew50",
+		a.skew_75 AS "skew75",
+		a.skew_95 AS "skew95",
+		a.abunmax AS "abunMax",
+		a.abunmin AS "abunMin",
+		a.abunavg AS "abunAvg",
+		a.abun_5 AS "abun5",
+		a.abun_25 AS "abun25",
+		a.abun_50 AS "abun50",
+		a.abun_75 AS "abun75",
+		a.abun_95 AS "abun95",
+		a.gradmax AS "gradMax",
+		a.gradmin AS "gradMin",
+		a.gradavg AS "gradAvg",
+		a.grad_5 AS "grad5",
+		a.grad_25 AS "grad25",
+		a.grad_50 AS "grad50",
+		a.grad_75 AS "grad75",
+		a.grad_95 AS "grad95"
+	</sql>
+	
+	<sql id="lgSliceStaticsAnalogJoins">
+	</sql>
+    
+	<select id="get" resultType="LgSliceStaticsAnalog">
+		SELECT 
+			<include refid="lgSliceStaticsAnalogColumns"/>
+		FROM lg_slicestaticsanalog a
+		<include refid="lgSliceStaticsAnalogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getAverageList" resultType="java.util.List">
+		select a.valueAvg from lg_slicestaticsanalog a where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="getMaxList" resultType="java.util.List">
+		select a.valueMax from lg_slicestaticsanalog a where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="getMinList" resultType="java.util.List">
+		select a.valueMin from lg_slicestaticsanalog a where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="getDataCountList" resultType="java.util.List">
+		select a.dataPointCount from lg_slicestaticsanalog a where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="getSentFrequenceList" resultType="java.util.List">
+		select a.sentFrequence from lg_slicestaticsanalog a where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="getGradList" resultType="java.util.List">
+		select a.gradAvg from lg_slicestaticsanalog a where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="getStandardList" resultType="java.util.List">
+				select a.standard_std from lg_slicestaticsanalog a where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="getVarianceList" resultType="java.util.List">
+				select a.variance_std from lg_slicestaticsanalog a where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="findList" resultType="LgSliceStaticsAnalog">
+		SELECT 
+			<include refid="lgSliceStaticsAnalogColumns"/>
+		FROM lg_slicestaticsanalog a
+		<include refid="lgSliceStaticsAnalogJoins"/>
+		<where>
+			
+			<if test="insertTime != null and insertTime != ''">
+				AND a.inserttime = #{insertTime}
+			</if>
+			<if test="deviceSliceId != null and deviceSliceId != ''">
+				AND a.devicesliceid = #{deviceSliceId}
+			</if>
+			<if test="deviceNo != null and deviceNo != ''">
+				AND a.deviceno = #{deviceNo}
+			</if>
+			<if test="sensorNo != null and sensorNo != ''">
+				AND a.sensorno = #{sensorNo}
+			</if>
+			<if test="sensorType != null and sensorType != ''">
+				AND a.sensortype = #{sensorType}
+			</if>
+			<if test="dataPointCount != null and dataPointCount != ''">
+				AND a.datapointcount = #{dataPointCount}
+			</if>
+			<if test="sensorDataStart != null and sensorDataStart != ''">
+				AND a.sensordatastart = #{sensorDataStart}
+			</if>
+			<if test="sensorDataEnd != null and sensorDataEnd != ''">
+				AND a.sensordataend = #{sensorDataEnd}
+			</if>
+			<if test="sensorDataDuration != null and sensorDataDuration != ''">
+				AND a.sensordataduration = #{sensorDataDuration}
+			</if>
+			<if test="sendFrequence != null and sendFrequence != ''">
+				AND a.sendfrequence = #{sendFrequence}
+			</if>
+			<if test="valueMax != null and valueMax != ''">
+				AND a.valuemax = #{valueMax}
+			</if>
+			<if test="valueMin != null and valueMin != ''">
+				AND a.valuemin = #{valueMin}
+			</if>
+			<if test="valueAvg != null and valueAvg != ''">
+				AND a.valueavg = #{valueAvg}
+			</if>
+			<if test="value5 != null and value5 != ''">
+				AND a.value_5 = #{value5}
+			</if>
+			<if test="value25 != null and value25 != ''">
+				AND a.value_25 = #{value25}
+			</if>
+			<if test="value50 != null and value50 != ''">
+				AND a.value_50 = #{value50}
+			</if>
+			<if test="value75 != null and value75 != ''">
+				AND a.value_75 = #{value75}
+			</if>
+			<if test="value95 != null and value95 != ''">
+				AND a.value_95 = #{value95}
+			</if>
+			<if test="standardStd != null and standardStd != ''">
+				AND a.standard_std = #{standardStd}
+			</if>
+			<if test="varianceStd != null and varianceStd != ''">
+				AND a.variance_std = #{varianceStd}
+			</if>
+			<if test="skewMax != null and skewMax != ''">
+				AND a.skewmax = #{skewMax}
+			</if>
+			<if test="skewMin != null and skewMin != ''">
+				AND a.skewmin = #{skewMin}
+			</if>
+			<if test="skewAvg != null and skewAvg != ''">
+				AND a.skewavg = #{skewAvg}
+			</if>
+			<if test="skew5 != null and skew5 != ''">
+				AND a.skew_5 = #{skew5}
+			</if>
+			<if test="skew25 != null and skew25 != ''">
+				AND a.skew_25 = #{skew25}
+			</if>
+			<if test="skew50 != null and skew50 != ''">
+				AND a.skew_50 = #{skew50}
+			</if>
+			<if test="skew75 != null and skew75 != ''">
+				AND a.skew_75 = #{skew75}
+			</if>
+			<if test="skew95 != null and skew95 != ''">
+				AND a.skew_95 = #{skew95}
+			</if>
+			<if test="abunMax != null and abunMax != ''">
+				AND a.abunmax = #{abunMax}
+			</if>
+			<if test="abunMin != null and abunMin != ''">
+				AND a.abunmin = #{abunMin}
+			</if>
+			<if test="abunAvg != null and abunAvg != ''">
+				AND a.abunavg = #{abunAvg}
+			</if>
+			<if test="abun5 != null and abun5 != ''">
+				AND a.abun_5 = #{abun5}
+			</if>
+			<if test="abun25 != null and abun25 != ''">
+				AND a.abun_25 = #{abun25}
+			</if>
+			<if test="abun50 != null and abun50 != ''">
+				AND a.abun_50 = #{abun50}
+			</if>
+			<if test="abun75 != null and abun75 != ''">
+				AND a.abun_75 = #{abun75}
+			</if>
+			<if test="abun95 != null and abun95 != ''">
+				AND a.abun_95 = #{abun95}
+			</if>
+			<if test="gradMax != null and gradMax != ''">
+				AND a.gradmax = #{gradMax}
+			</if>
+			<if test="gradMin != null and gradMin != ''">
+				AND a.gradmin = #{gradMin}
+			</if>
+			<if test="gradAvg != null and gradAvg != ''">
+				AND a.gradavg = #{gradAvg}
+			</if>
+			<if test="grad5 != null and grad5 != ''">
+				AND a.grad_5 = #{grad5}
+			</if>
+			<if test="grad25 != null and grad25 != ''">
+				AND a.grad_25 = #{grad25}
+			</if>
+			<if test="grad50 != null and grad50 != ''">
+				AND a.grad_50 = #{grad50}
+			</if>
+			<if test="grad75 != null and grad75 != ''">
+				AND a.grad_75 = #{grad75}
+			</if>
+			<if test="grad95 != null and grad95 != ''">
+				AND a.grad_95 = #{grad95}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgSliceStaticsAnalog">
+		SELECT 
+			<include refid="lgSliceStaticsAnalogColumns"/>
+		FROM lg_slicestaticsanalog a
+		<include refid="lgSliceStaticsAnalogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_slicestaticsanalog(
+			id,
+			inserttime,
+			devicesliceid,
+			deviceno,
+			sensorno,
+			sensortype,
+			datapointcount,
+			sensordatastart,
+			sensordataend,
+			sensordataduration,
+			sendfrequence,
+			valuemax,
+			valuemin,
+			valueavg,
+			value_5,
+			value_25,
+			value_50,
+			value_75,
+			value_95,
+			standard_std,
+			variance_std,
+			skewmax,
+			skewmin,
+			skewavg,
+			skew_5,
+			skew_25,
+			skew_50,
+			skew_75,
+			skew_95,
+			abunmax,
+			abunmin,
+			abunavg,
+			abun_5,
+			abun_25,
+			abun_50,
+			abun_75,
+			abun_95,
+			gradmax,
+			gradmin,
+			gradavg,
+			grad_5,
+			grad_25,
+			grad_50,
+			grad_75,
+			grad_95
+		) VALUES (
+			#{id},
+			#{insertTime},
+			#{deviceSliceId},
+			#{deviceNo},
+			#{sensorNo},
+			#{sensorType},
+			#{dataPointCount},
+			#{sensorDataStart},
+			#{sensorDataEnd},
+			#{sensorDataDuration},
+			#{sendFrequence},
+			#{valueMax},
+			#{valueMin},
+			#{valueAvg},
+			#{value5},
+			#{value25},
+			#{value50},
+			#{value75},
+			#{value95},
+			#{standardStd},
+			#{varianceStd},
+			#{skewMax},
+			#{skewMin},
+			#{skewAvg},
+			#{skew5},
+			#{skew25},
+			#{skew50},
+			#{skew75},
+			#{skew95},
+			#{abunMax},
+			#{abunMin},
+			#{abunAvg},
+			#{abun5},
+			#{abun25},
+			#{abun50},
+			#{abun75},
+			#{abun95},
+			#{gradMax},
+			#{gradMin},
+			#{gradAvg},
+			#{grad5},
+			#{grad25},
+			#{grad50},
+			#{grad75},
+			#{grad95}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_slicestaticsanalog SET 	
+			inserttime = #{insertTime},
+			devicesliceid = #{deviceSliceId},
+			deviceno = #{deviceNo},
+			sensorno = #{sensorNo},
+			sensortype = #{sensorType},
+			datapointcount = #{dataPointCount},
+			sensordatastart = #{sensorDataStart},
+			sensordataend = #{sensorDataEnd},
+			sensordataduration = #{sensorDataDuration},
+			sendfrequence = #{sendFrequence},
+			valuemax = #{valueMax},
+			valuemin = #{valueMin},
+			valueavg = #{valueAvg},
+			value_5 = #{value5},
+			value_25 = #{value25},
+			value_50 = #{value50},
+			value_75 = #{value75},
+			value_95 = #{value95},
+			standard_std = #{standardStd},
+			variance_std = #{varianceStd},
+			skewmax = #{skewMax},
+			skewmin = #{skewMin},
+			skewavg = #{skewAvg},
+			skew_5 = #{skew5},
+			skew_25 = #{skew25},
+			skew_50 = #{skew50},
+			skew_75 = #{skew75},
+			skew_95 = #{skew95},
+			abunmax = #{abunMax},
+			abunmin = #{abunMin},
+			abunavg = #{abunAvg},
+			abun_5 = #{abun5},
+			abun_25 = #{abun25},
+			abun_50 = #{abun50},
+			abun_75 = #{abun75},
+			abun_95 = #{abun95},
+			gradmax = #{gradMax},
+			gradmin = #{gradMin},
+			gradavg = #{gradAvg},
+			grad_5 = #{grad5},
+			grad_25 = #{grad25},
+			grad_50 = #{grad50},
+			grad_75 = #{grad75},
+			grad_95 = #{grad95}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_slicestaticsanalog
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,447 @@
+table {
+	border-collapse: collapse;
+	border: 1px solid #ccc;
+	width: 100%;
+}
+
+thead td {
+	border: 1px solid #ccc;
+	width: 14.5%;
+	text-align: center;
+	height: 34px;
+	/*background: #E4E4E4;*/
+}
+
+.second {
+	width: 70.3125%;
+	border-right: 0;
+	border-left: 0;
+}
+
+thead td:nth-of-type(1)::after {
+	content: '';
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: -2;
+	display: block;
+	top: 0;
+	left: 0;
+	background-image: linear-gradient(to right top, transparent calc(50% - 1px),
+		#DEDEDE, transparent calc(50% + 1px));
+}
+
+tbody tr {
+	border: 1px solid #ccc;
+}
+
+thead .left, thead .right {
+	height: 50px;
+	position: absolute;
+}
+
+thead .left {
+	left: 2px;
+}
+
+thead .right {
+	top: 2px;
+	right: 6px;
+}
+
+td {
+	position: relative;
+}
+
+tr td:nth-of-type(1), tr td:nth-of-type(3) {
+	border: 1px solid #ccc;
+	text-align: center;
+}
+
+.map-tooltip {
+	position: absolute;
+	top: 10px;
+	left: 25px;
+	background: #FFFFFF;
+	width: 200px;
+	height: 100px;
+	border-radius: 3px;
+	border: 1px solid #ccc;
+	z-index: 100;
+	padding-left: 10px;
+	/*padding-top: 10px;*/
+}
+
+.tooltips {
+	height: auto;
+	bottom: 1px;
+	top: 0;
+	margin-top: 1px;
+	position: absolute;
+}
+
+.container {
+	border: 1px solid #ccc;
+	padding: 5px;
+	margin-bottom: 10px;
+}
+
+.error {
+	color: red;
+	display: none;
+}
+
+.line {
+	position: absolute;
+	border-right: 1px solid #A4A4A4;
+	width: 2.08%;
+	bottom: 0;
+}
+
+.short-lines {
+	height: calc(30%);
+}
+
+.large-lines {
+	height: calc(60%);
+}
+
+.second div:nth-of-type(1) {
+	left: 0%;
+}
+
+.second div:nth-of-type(2) {
+	left: 2.08333%;
+}
+
+.second div:nth-of-type(3) {
+	left: 4.16667%;
+}
+
+.second div:nth-of-type(4) {
+	left: 6.25%;
+}
+
+.second div:nth-of-type(5) {
+	left: 8.33333%;
+}
+
+.second div:nth-of-type(6) {
+	left: 10.41667%;
+}
+
+.second div:nth-of-type(7) {
+	left: 12.5%;
+}
+
+.second div:nth-of-type(8) {
+	left: 14.58333%;
+}
+
+.second div:nth-of-type(9) {
+	left: 16.66667%;
+}
+
+.second div:nth-of-type(10) {
+	left: 18.75%;
+}
+
+.second div:nth-of-type(11) {
+	left: 20.83333%;
+}
+
+.second div:nth-of-type(12) {
+	left: 22.91667%;
+}
+
+.second div:nth-of-type(13) {
+	left: 25%;
+}
+
+.second div:nth-of-type(14) {
+	left: 27.08333%;
+}
+
+.second div:nth-of-type(15) {
+	left: 29.16667%;
+}
+
+.second div:nth-of-type(16) {
+	left: 31.25%;
+}
+
+.second div:nth-of-type(17) {
+	left: 33.33333%;
+}
+
+.second div:nth-of-type(18) {
+	left: 35.41667%;
+}
+
+.second div:nth-of-type(19) {
+	left: 37.5%;
+}
+
+.second div:nth-of-type(20) {
+	left: 39.58333%;
+}
+
+.second div:nth-of-type(21) {
+	left: 41.66667%;
+}
+
+.second div:nth-of-type(22) {
+	left: 43.75%;
+}
+
+.second div:nth-of-type(23) {
+	left: 45.83333%;
+}
+
+.second div:nth-of-type(24) {
+	left: 47.91667%;
+}
+
+.second div:nth-of-type(25) {
+	left: 50%;
+}
+
+.second div:nth-of-type(26) {
+	left: 52.08333%;
+}
+
+.second div:nth-of-type(27) {
+	left: 54.16667%;
+}
+
+.second div:nth-of-type(28) {
+	left: 56.25%;
+}
+
+.second div:nth-of-type(29) {
+	left: 58.33333%;
+}
+
+.second div:nth-of-type(30) {
+	left: 60.41667%;
+}
+
+.second div:nth-of-type(31) {
+	left: 62.5%;
+}
+
+.second div:nth-of-type(32) {
+	left: 64.58333%;
+}
+
+.second div:nth-of-type(33) {
+	left: 66.66667%;
+}
+
+.second div:nth-of-type(34) {
+	left: 68.75%;
+}
+
+.second div:nth-of-type(35) {
+	left: 70.83333%;
+}
+
+.second div:nth-of-type(36) {
+	left: 72.91667%;
+}
+
+.second div:nth-of-type(37) {
+	left: 75%;
+}
+
+.second div:nth-of-type(38) {
+	left: 77.08333%;
+}
+
+.second div:nth-of-type(39) {
+	left: 79.16667%;
+}
+
+.second div:nth-of-type(40) {
+	left: 81.25%;
+}
+
+.second div:nth-of-type(41) {
+	left: 83.33333%;
+}
+
+.second div:nth-of-type(42) {
+	left: 85.41667%;
+}
+
+.second div:nth-of-type(43) {
+	left: 87.5%;
+}
+
+.second div:nth-of-type(44) {
+	left: 89.58333%;
+}
+
+.second div:nth-of-type(45) {
+	left: 91.66667%;
+}
+
+.second div:nth-of-type(46) {
+	left: 93.75%;
+}
+
+.second div:nth-of-type(47) {
+	left: 95.83333%;
+}
+
+.second div:nth-of-type(48) {
+	left: 97.91667%;
+}
+
+.number {
+	position: absolute;
+	top: -15px;
+	right: 2px;
+	color: #A4A4A4;
+}
+
+.color-ul {
+	list-style: none;
+	width: 100%;
+	text-align: center;
+	margin: 0;
+}
+
+.color-ul li {
+	display: inline-block;
+	width: 4.2%;
+	height: 40px;
+	margin-bottom: 20px;
+	padding-top: 10px;
+}
+
+ul.color-ul {
+	font-size: 0px;
+}
+
+ul.color-ul li {
+	font-size: 14px;
+}
+
+.color {
+	height: 15px;
+}
+
+.time-color {
+	width: 100%;
+	margin: 0 auto;
+}
+
+.color-li {
+	position: relative;
+}
+
+.color-number {
+	position: absolute;
+	width: 100%;
+	height: auto;
+	left: 0;
+	text-align: center;
+}
+
+.color-li:nth-of-type(1) .color {
+	background: #949FFC
+}
+
+.color-li:nth-of-type(2) .color {
+	background: #95AFFB
+}
+
+.color-li:nth-of-type(3) .color {
+	background: #97C2FC
+}
+
+.color-li:nth-of-type(4) .color {
+	background: #96DEFC
+}
+
+.color-li:nth-of-type(5) .color {
+	background: #AFEAFD
+}
+
+.color-li:nth-of-type(6) .color {
+	background: #AEF6FB
+}
+
+.color-li:nth-of-type(7) .color {
+	background: #AFF5E9
+}
+
+.color-li:nth-of-type(8) .color {
+	background: #ADF2DD
+}
+
+.color-li:nth-of-type(9) .color {
+	background: #C6F6DF
+}
+
+.color-li:nth-of-type(10) .color {
+	background: #C6F6D2
+}
+
+.color-li:nth-of-type(11) .color {
+	background: #C7F4C8
+}
+
+.color-li:nth-of-type(12) .color {
+	background: #D0F4C6
+}
+
+.color-li:nth-of-type(13) .color {
+	background: #DBF6C9
+}
+
+.color-li:nth-of-type(14) .color {
+	background: #DBF4B1
+}
+
+.color-li:nth-of-type(15) .color {
+	background: #ECF6B0
+}
+
+.color-li:nth-of-type(16) .color {
+	background: #FEF5B1
+}
+
+.color-li:nth-of-type(17) .color {
+	background: #FDE9B2
+}
+
+.color-li:nth-of-type(18) .color {
+	background: #FECE9B
+}
+
+.color-li:nth-of-type(19) .color {
+	background: #FDC299
+}
+
+.color-li:nth-of-type(20) .color {
+	background: #FBB197
+}
+
+.color-li:nth-of-type(21) .color {
+	background: #FDA094
+}
+
+* {
+	box-sizing: border-box;
+}
+
+#rightTop {
+	margin-top: 5px;
+	margin-bottom: 20px;
+}
+
+#rightBottom {
+	clear: both;
+}

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.slice.LgSliceTempDataDao">
+    
+	<sql id="LgSliceTempDataSectionColumns">
+		a.acc_status AS "accStatus",
+		a.device_num AS "deviceNum",
+		a.record_time AS "recordTime",
+		a.province AS "province",
+		a.city AS "city",
+		a.address AS "address",
+		a.latitude_num AS "latitudeNum",
+		a.longitude_num AS "longitudeNum",
+		a.engin_rotate AS "enginRotate",
+		a.start_times AS "startTimes"
+	</sql>
+	<select id="findList" resultType="LgSliceTempDataSection">
+		select 
+		<include refid="LgSliceTempDataSectionColumns"/>
+		from lg_slicedata a 
+		<where>	
+			and latitude_num > 0 and longitude_num > 0
+			<if test="deviceNum != null and deviceNum != ''">
+				AND a.device_num = #{deviceNum}
+			</if>
+			<if test="recordTime != null and recordTime != ''">
+				AND date(a.record_time) = #{recordTime}
+			</if>
+		</where>
+			order by record_time;
+	</select>
+	
+	<select id="getSliceLocationList" resultType="LgSliceTempDataSection">
+		SELECT a.record_time AS "recordTime",
+			   a.province AS "province", 
+			   a.device_num AS "deviceNum",
+			   a.longitude_num AS "longitudeNum", 
+			   a.latitude_num AS "latitudeNum",
+			   b.machineType AS "machineType",
+			   (SELECT c.label FROM sys_dict c WHERE c.type = 'machineType' AND c.value = b.machineType) AS "machineTypeName"
+		  FROM lg_slicedata a
+		  LEFT JOIN lg_machineprofile b ON a.device_num = b.`code`
+		<where>
+			<if test="province != null and province != ''">
+				AND a.province LIKE CONCAT(#{province},'%')
+			</if>
+			<if test="machineType != null and machineType != ''">
+				AND b.machineType = #{machineType}
+			</if>
+			<if test="customerId != null and customerId != ''">
+				AND b.customerId IN (#{customerId})
+			</if>
+			<if test="saleYear != null and saleYear != ''">
+				AND YEAR(b.saleDate) IN (#{saleYear})
+			</if>
+		</where>
+		LIMIT 2000
+	</select>
+</mapper>

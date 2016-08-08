@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgSliceStaticsSwitchDao">
+    
+	<sql id="lgSliceStaticsSwitchColumns">
+		a.id AS "id",
+		a.inserttime AS "insertTime",
+		a.sensorMark AS "sensorMark",
+		a.devicesliceid AS "deviceSliceId",
+		a.deviceno AS "deviceNo",
+		a.sensortype AS "sensorType",
+		a.datapointcount AS "dataPointCount",
+		a.sensordatastart AS "sensorDataStart",
+		a.sensordataend AS "sensorDataEnd",
+		a.sensordataduration AS "sensorDataDuration",
+		a.sendfrequence AS "sendFrequence",
+		a.changecount AS "changeCount",
+		a.highcount AS "highCount",
+		a.highdurationmax AS "highDurationMax",
+		a.highdurationmin AS "highDurationMin",
+		a.highdurationavg AS "highDurationAvg",
+		a.highduration_5 AS "highDuration5",
+		a.highduration_25 AS "highDuration25",
+		a.highduration_50 AS "highDuration50",
+		a.highduration_75 AS "highDuration75",
+		a.highduration_95 AS "highDuration95",
+		a.highdurationstandard_std AS "highDurationStandardStd",
+		a.highdurationvariance_std AS "highDurationVarianceStd",
+		a.highmax AS "highMax",
+		a.highmin AS "highMin",
+		a.highavg AS "highAvg",
+		a.high_5 AS "high5",
+		a.high_25 AS "high25",
+		a.high_50 AS "high50",
+		a.high_75 AS "high75",
+		a.high_95 AS "high95",
+		a.highstandard_std AS "highStandardStd",
+		a.highvariance_std AS "highVarianceStd",
+		a.lowcount AS "lowCount",
+		a.lowdurationmax AS "lowDurationMax",
+		a.lowdurationmin AS "lowDurationMin",
+		a.lowdurationavg AS "lowDurationAvg",
+		a.lowduration_5 AS "lowDuration5",
+		a.lowduration_25 AS "lowDuration25",
+		a.lowduration_50 AS "lowDuration50",
+		a.lowduration_75 AS "lowDuration75",
+		a.lowduration_95 AS "lowDuration95",
+		a.lowdurationstandard_std AS "lowDurationStandardStd",
+		a.lowdurationvariance_std AS "lowDurationVarianceStd",
+		a.lowmax AS "lowMax",
+		a.lowmin AS "lowMin",
+		a.lowavg AS "lowAvg",
+		a.low_5 AS "low5",
+		a.low_25 AS "low25",
+		a.low_50 AS "low50",
+		a.low_75 AS "low75",
+		a.low_95 AS "low95",
+		a.lowstandard_std AS "lowStandardStd",
+		a.lowvariance_std AS "lowVarianceStd"
+	</sql>
+	
+	<sql id="lgSliceStaticsSwitchJoins">
+	</sql>
+    
+	<select id="get" resultType="LgSliceStaticsSwitch">
+		SELECT 
+			<include refid="lgSliceStaticsSwitchColumns"/>
+		FROM lg_slicestaticsswitch a
+		<include refid="lgSliceStaticsSwitchJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgSliceStaticsSwitch">
+		SELECT 
+			<include refid="lgSliceStaticsSwitchColumns"/>
+		FROM lg_slicestaticsswitch a
+		<include refid="lgSliceStaticsSwitchJoins"/>
+		<where>
+			
+			<if test="insertTime != null and insertTime != ''">
+				AND a.inserttime = #{insertTime}
+			</if>
+			<if test="deviceSliceId != null and deviceSliceId != ''">
+				AND a.devicesliceid = #{deviceSliceId}
+			</if>
+			<if test="deviceNo != null and deviceNo != ''">
+				AND a.deviceno = #{deviceNo}
+			</if>
+			<if test="sensorType != null and sensorType != ''">
+				AND a.sensortype = #{sensorType}
+			</if>
+			<if test="dataPointCount != null and dataPointCount != ''">
+				AND a.datapointcount = #{dataPointCount}
+			</if>
+			<if test="sensorDataStart != null and sensorDataStart != ''">
+				AND a.sensordatastart = #{sensorDataStart}
+			</if>
+			<if test="sensorDataEnd != null and sensorDataEnd != ''">
+				AND a.sensordataend = #{sensorDataEnd}
+			</if>
+			<if test="sensorDataDuration != null and sensorDataDuration != ''">
+				AND a.sensordataduration = #{sensorDataDuration}
+			</if>
+			<if test="sendFrequence != null and sendFrequence != ''">
+				AND a.sendfrequence = #{sendFrequence}
+			</if>
+			<if test="changeCount != null and changeCount != ''">
+				AND a.changecount = #{changeCount}
+			</if>
+			<if test="highCount != null and highCount != ''">
+				AND a.highcount = #{highCount}
+			</if>
+			<if test="highDurationMax != null and highDurationMax != ''">
+				AND a.highdurationmax = #{highDurationMax}
+			</if>
+			<if test="highDurationMin != null and highDurationMin != ''">
+				AND a.highdurationmin = #{highDurationMin}
+			</if>
+			<if test="highDurationAvg != null and highDurationAvg != ''">
+				AND a.highdurationavg = #{highDurationAvg}
+			</if>
+			<if test="highDuration5 != null and highDuration5 != ''">
+				AND a.highduration_5 = #{highDuration5}
+			</if>
+			<if test="highDuration25 != null and highDuration25 != ''">
+				AND a.highduration_25 = #{highDuration25}
+			</if>
+			<if test="highDuration50 != null and highDuration50 != ''">
+				AND a.highduration_50 = #{highDuration50}
+			</if>
+			<if test="highDuration75 != null and highDuration75 != ''">
+				AND a.highduration_75 = #{highDuration75}
+			</if>
+			<if test="highDuration95 != null and highDuration95 != ''">
+				AND a.highduration_95 = #{highDuration95}
+			</if>
+			<if test="highDurationStandardStd != null and highDurationStandardStd != ''">
+				AND a.highdurationstandard_std = #{highDurationStandardStd}
+			</if>
+			<if test="highDurationVarianceStd != null and highDurationVarianceStd != ''">
+				AND a.highdurationvariance_std = #{highDurationVarianceStd}
+			</if>
+			<if test="highMax != null and highMax != ''">
+				AND a.highmax = #{highMax}
+			</if>
+			<if test="highMin != null and highMin != ''">
+				AND a.highmin = #{highMin}
+			</if>
+			<if test="highAvg != null and highAvg != ''">
+				AND a.highavg = #{highAvg}
+			</if>
+			<if test="high5 != null and high5 != ''">
+				AND a.high_5 = #{high5}
+			</if>
+			<if test="high25 != null and high25 != ''">
+				AND a.high_25 = #{high25}
+			</if>
+			<if test="high50 != null and high50 != ''">
+				AND a.high_50 = #{high50}
+			</if>
+			<if test="high75 != null and high75 != ''">
+				AND a.high_75 = #{high75}
+			</if>
+			<if test="high95 != null and high95 != ''">
+				AND a.high_95 = #{high95}
+			</if>
+			<if test="highStandardStd != null and highStandardStd != ''">
+				AND a.highstandard_std = #{highStandardStd}
+			</if>
+			<if test="highVarianceStd != null and highVarianceStd != ''">
+				AND a.highvariance_std = #{highVarianceStd}
+			</if>
+			<if test="lowCount != null and lowCount != ''">
+				AND a.lowcount = #{lowCount}
+			</if>
+			<if test="lowDurationMax != null and lowDurationMax != ''">
+				AND a.lowdurationmax = #{lowDurationMax}
+			</if>
+			<if test="lowDurationMin != null and lowDurationMin != ''">
+				AND a.lowdurationmin = #{lowDurationMin}
+			</if>
+			<if test="lowDurationAvg != null and lowDurationAvg != ''">
+				AND a.lowdurationavg = #{lowDurationAvg}
+			</if>
+			<if test="lowDuration5 != null and lowDuration5 != ''">
+				AND a.lowduration_5 = #{lowDuration5}
+			</if>
+			<if test="lowDuration25 != null and lowDuration25 != ''">
+				AND a.lowduration_25 = #{lowDuration25}
+			</if>
+			<if test="lowDuration50 != null and lowDuration50 != ''">
+				AND a.lowduration_50 = #{lowDuration50}
+			</if>
+			<if test="lowDuration75 != null and lowDuration75 != ''">
+				AND a.lowduration_75 = #{lowDuration75}
+			</if>
+			<if test="lowDuration95 != null and lowDuration95 != ''">
+				AND a.lowduration_95 = #{lowDuration95}
+			</if>
+			<if test="lowDurationStandardStd != null and lowDurationStandardStd != ''">
+				AND a.lowdurationstandard_std = #{lowDurationStandardStd}
+			</if>
+			<if test="lowDurationVarianceStd != null and lowDurationVarianceStd != ''">
+				AND a.lowdurationvariance_std = #{lowDurationVarianceStd}
+			</if>
+			<if test="lowMax != null and lowMax != ''">
+				AND a.lowmax = #{lowMax}
+			</if>
+			<if test="lowMin != null and lowMin != ''">
+				AND a.lowmin = #{lowMin}
+			</if>
+			<if test="lowAvg != null and lowAvg != ''">
+				AND a.lowavg = #{lowAvg}
+			</if>
+			<if test="low5 != null and low5 != ''">
+				AND a.low_5 = #{low5}
+			</if>
+			<if test="low25 != null and low25 != ''">
+				AND a.low_25 = #{low25}
+			</if>
+			<if test="low50 != null and low50 != ''">
+				AND a.low_50 = #{low50}
+			</if>
+			<if test="low75 != null and low75 != ''">
+				AND a.low_75 = #{low75}
+			</if>
+			<if test="low95 != null and low95 != ''">
+				AND a.low_95 = #{low95}
+			</if>
+			<if test="lowStandardStd != null and lowStandardStd != ''">
+				AND a.lowstandard_std = #{lowStandardStd}
+			</if>
+			<if test="lowVarianceStd != null and lowVarianceStd != ''">
+				AND a.lowvariance_std = #{lowVarianceStd}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getChangeCountList" resultType="java.util.List">
+		select a.changeCount from lg_slicestaticsswitch where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="getHighCountList" resultType="java.util.List">
+		select a.highCount from lg_slicestaticsswitch where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="getLowCountList" resultType="java.util.List">
+		select a.lowCount from lg_slicestaticsswitch where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="getDataPointList" resultType="java.util.List">
+		select a.dataPointCount from lg_slicestaticsswitch where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="getSentFrequenceList" resultType="java.util.List">
+		select a.sendFrequence from lg_slicestaticsswitch where a.deviceNo=#{deviceNo} and a.sensorNo=#{sensorNo}
+	</select>
+	
+	<select id="findAllList" resultType="LgSliceStaticsSwitch">
+		SELECT 
+			<include refid="lgSliceStaticsSwitchColumns"/>
+		FROM lg_slicestaticsswitch a
+		<include refid="lgSliceStaticsSwitchJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_slicestaticsswitch(
+			id,
+			inserttime,
+			sensorMark,
+			devicesliceid,
+			deviceno,
+			sensortype,
+			datapointcount,
+			sensordatastart,
+			sensordataend,
+			sensordataduration,
+			sendfrequence,
+			changecount,
+			highcount,
+			highdurationmax,
+			highdurationmin,
+			highdurationavg,
+			highduration_5,
+			highduration_25,
+			highduration_50,
+			highduration_75,
+			highduration_95,
+			highdurationstandard_std,
+			highdurationvariance_std,
+			highmax,
+			highmin,
+			highavg,
+			high_5,
+			high_25,
+			high_50,
+			high_75,
+			high_95,
+			highstandard_std,
+			highvariance_std,
+			lowcount,
+			lowdurationmax,
+			lowdurationmin,
+			lowdurationavg,
+			lowduration_5,
+			lowduration_25,
+			lowduration_50,
+			lowduration_75,
+			lowduration_95,
+			lowdurationstandard_std,
+			lowdurationvariance_std,
+			lowmax,
+			lowmin,
+			lowavg,
+			low_5,
+			low_25,
+			low_50,
+			low_75,
+			low_95,
+			lowstandard_std,
+			lowvariance_std
+		) VALUES (
+			#{id},
+			#{insertTime},
+			#{sensorMark},
+			#{deviceSliceId},
+			#{deviceNo},
+			#{sensorType},
+			#{dataPointCount},
+			#{sensorDataStart},
+			#{sensorDataEnd},
+			#{sensorDataDuration},
+			#{sendFrequence},
+			#{changeCount},
+			#{highCount},
+			#{highDurationMax},
+			#{highDurationMin},
+			#{highDurationAvg},
+			#{highDuration5},
+			#{highDuration25},
+			#{highDuration50},
+			#{highDuration75},
+			#{highDuration95},
+			#{highDurationStandardStd},
+			#{highDurationVarianceStd},
+			#{highMax},
+			#{highMin},
+			#{highAvg},
+			#{high5},
+			#{high25},
+			#{high50},
+			#{high75},
+			#{high95},
+			#{highStandardStd},
+			#{highVarianceStd},
+			#{lowCount},
+			#{lowDurationMax},
+			#{lowDurationMin},
+			#{lowDurationAvg},
+			#{lowDuration5},
+			#{lowDuration25},
+			#{lowDuration50},
+			#{lowDuration75},
+			#{lowDuration95},
+			#{lowDurationStandardStd},
+			#{lowDurationVarianceStd},
+			#{lowMax},
+			#{lowMin},
+			#{lowAvg},
+			#{low5},
+			#{low25},
+			#{low50},
+			#{low75},
+			#{low95},
+			#{lowStandardStd},
+			#{lowVarianceStd}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_slicestaticsswitch SET 	
+			inserttime = #{insertTime},
+			sensorMark = #{sensorMark},
+			devicesliceid = #{deviceSliceId},
+			deviceno = #{deviceNo},
+			sensortype = #{sensorType},
+			datapointcount = #{dataPointCount},
+			sensordatastart = #{sensorDataStart},
+			sensordataend = #{sensorDataEnd},
+			sensordataduration = #{sensorDataDuration},
+			sendfrequence = #{sendFrequence},
+			changecount = #{changeCount},
+			highcount = #{highCount},
+			highdurationmax = #{highDurationMax},
+			highdurationmin = #{highDurationMin},
+			highdurationavg = #{highDurationAvg},
+			highduration_5 = #{highDuration5},
+			highduration_25 = #{highDuration25},
+			highduration_50 = #{highDuration50},
+			highduration_75 = #{highDuration75},
+			highduration_95 = #{highDuration95},
+			highdurationstandard_std = #{highDurationStandardStd},
+			highdurationvariance_std = #{highDurationVarianceStd},
+			highmax = #{highMax},
+			highmin = #{highMin},
+			highavg = #{highAvg},
+			high_5 = #{high5},
+			high_25 = #{high25},
+			high_50 = #{high50},
+			high_75 = #{high75},
+			high_95 = #{high95},
+			highstandard_std = #{highStandardStd},
+			highvariance_std = #{highVarianceStd},
+			lowcount = #{lowCount},
+			lowdurationmax = #{lowDurationMax},
+			lowdurationmin = #{lowDurationMin},
+			lowdurationavg = #{lowDurationAvg},
+			lowduration_5 = #{lowDuration5},
+			lowduration_25 = #{lowDuration25},
+			lowduration_50 = #{lowDuration50},
+			lowduration_75 = #{lowDuration75},
+			lowduration_95 = #{lowDuration95},
+			lowdurationstandard_std = #{lowDurationStandardStd},
+			lowdurationvariance_std = #{lowDurationVarianceStd},
+			lowmax = #{lowMax},
+			lowmin = #{lowMin},
+			lowavg = #{lowAvg},
+			low_5 = #{low5},
+			low_25 = #{low25},
+			low_50 = #{low50},
+			low_75 = #{low75},
+			low_95 = #{low95},
+			lowstandard_std = #{lowStandardStd},
+			lowvariance_std = #{lowVarianceStd}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_slicestaticsswitch
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

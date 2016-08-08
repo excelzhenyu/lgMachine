@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.citylist.LgCityComparisonDao">
+    
+	<sql id="lgCityComparisonColumns">
+		a.id AS "id",
+		a.mapcityid AS "mapCityId",
+		a.systemcityid AS "systemCityId",
+		a.iseffective AS "isEffective"
+	</sql>
+	<sql id="lgMapCityColumns">
+		a.id AS "id",
+		a.parentid AS "parentId",
+		a.citycode AS "cityCode",
+		a.cityname AS "cityName",
+		a.isort AS "isort"
+	</sql>
+	<sql id="lgSystemCityColumns">
+		a.id AS "id",
+		a.parentid AS "parentId",
+		a.citycode AS "cityCode",
+		a.cityname AS "cityName",
+		a.isort AS "isort"
+	</sql>
+	
+	<sql id="lgCityComparisonJoins">
+	</sql>
+    
+	<select id="get" resultType="LgCityComparison">
+		SELECT 
+			<include refid="lgCityComparisonColumns"/>
+		FROM lg_citycomparison a
+		<include refid="lgCityComparisonJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgCityComparison">
+
+		select 	a.id, a.mapcityid, a.systemcityid, a.iseffective, b.cityCode as mapCityCode,b.cityName as mapCityName,
+    		c.cityCode as systemCityCode,c.cityName as systemCityName 
+    	from lg_citycomparison a
+			left join lg_mapCity b on a.mapcityid=b.id
+    		left join lg_systemCity c on a.systemcityid=c.id
+    	<where>
+			<if test="mapCityCode != null and mapCityCode != ''">
+				AND b.cityCode LIKE 
+				<if test="dbName == 'oracle'">'%'||#{mapCityCode}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{mapCityCode}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{mapCityCode},'%')</if>
+			</if>
+			<if test="mapCityName != null and mapCityName != ''"> 
+				AND b.cityName LIKE 
+				<if test="dbName == 'oracle'">'%'||#{mapCityName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{mapCityName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{mapCityName},'%')</if>
+			</if>
+			<if test="systemCityCode != null and systemCityCode != ''">
+				AND c.cityCode LIKE
+				<if test="dbName == 'oracle'">'%'||#{systemCityCode}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{systemCityCode}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{systemCityCode},'%')</if> 
+			</if>
+			<if test="systemCityName != null and systemCityName != ''"> 
+				AND c.cityName LIKE
+				<if test="dbName == 'oracle'">'%'||#{systemCityName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{systemCityName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{systemCityName},'%')</if> 
+			</if>
+		</where>
+		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListFromCity" resultType="LgCityComparison">
+				select '' as id,a.id as mapCityId,b.id as systemCityId,'1' as isEffective from lg_mapCity a inner join lg_systemCity b on a.cityName=b.cityName
+				and a.id not in (select mapCityId from lg_citycomparison where isEffective = 1) 
+				and b.id not in (select systemCityId from lg_citycomparison where isEffective = 1) 
+	</select>
+		
+	<select id="findAllList" resultType="LgCityComparison">
+		SELECT 
+			<include refid="lgCityComparisonColumns"/>
+		FROM lg_citycomparison a
+		<include refid="lgCityComparisonJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_citycomparison(
+			id,
+			mapcityid,
+			systemcityid,
+			iseffective
+		) VALUES (
+			#{id},
+			#{mapCityId},
+			#{systemCityId},
+			#{isEffective}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_citycomparison SET 	
+			mapcityid = #{mapCityId},
+			systemcityid = #{systemCityId},
+			iseffective = #{isEffective}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_citycomparison
+		WHERE id = #{id}
+	</update>
+	
+	<insert id="saveBatch" >
+		INSERT INTO lg_citycomparison(
+			id,
+			mapCityId,
+			systemCityId,
+			isEffective
+		) VALUES 
+		 <foreach item="list" index="index" collection="list"  separator="," >
+			(
+				#{list.id},
+				#{list.mapCityId},
+				#{list.systemCityId},
+				#{list.isEffective}
+			)
+		</foreach>
+	</insert>
+	
+	<select id="findSystemCityList" resultType="LgSystemCity">
+		SELECT 
+			<include refid="lgSystemCityColumns"/>
+		FROM lg_systemcity a 
+		<where>
+			not exists (
+			select * from lg_citycomparison b where a.id=b.systemCityId AND b.iseffective = 1
+			)
+			<if test="cityCode != null and cityCode != ''"> 
+			AND (
+			a.citycode LIKE 
+				<if test="dbName == 'oracle'">'%'||#{cityCode}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{cityCode}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{cityCode},'%')</if> 
+			OR
+			a.cityName LIKE 
+				<if test="dbName == 'oracle'">'%'||#{cityCode}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{cityCode}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{cityCode},'%')</if> 			
+			)
+			</if>
+		</where>
+		order by parentid, isort
+	</select>
+	
+	<select id="findMapCityList" resultType="LgMapCity">
+		SELECT 
+			<include refid="lgMapCityColumns"/>
+		FROM lg_mapcity a 
+		<where>
+			not exists (
+				select * from lg_citycomparison b where a.id=b.mapCityId AND b.iseffective = 1
+			)
+			<if test="cityCode != null and cityCode != ''"> 
+			AND (
+			a.citycode LIKE 
+				<if test="dbName == 'oracle'">'%'||#{cityCode}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{cityCode}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{cityCode},'%')</if> 
+			OR
+			a.cityname LIKE 
+				<if test="dbName == 'oracle'">'%'||#{cityCode}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{cityCode}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{cityCode},'%')</if> 			
+			)
+			</if>
+		</where>
+		order by parentid, isort
+	</select>
+</mapper>

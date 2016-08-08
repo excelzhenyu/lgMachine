@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.slice.LgSliceStaticsStatusDao">
+    
+	<sql id="lgSliceStaticsStatusColumns">
+		a.id AS "id",
+		a.inserttime AS "insertTime",
+		a.devicesliceid AS "deviceSliceId",
+		a.deviceno AS "deviceNo",
+		a.sensorno AS "sensorNo",
+		a.sensortype AS "sensorType",
+		a.datapointcount AS "dataPointCount",
+		a.sensordatastart AS "sensorDataStart",
+		a.sensordataend AS "sensorDataEnd",
+		a.sensordataduration AS "sensorDataDuration",
+		a.changecount AS "changeCount"
+	</sql>
+	
+	<sql id="lgSliceStaticsStatusJoins">
+	</sql>
+    
+	<select id="get" resultType="LgSliceStaticsStatus">
+		SELECT 
+			<include refid="lgSliceStaticsStatusColumns"/>
+		FROM lg_slicestaticsstatus a
+		<include refid="lgSliceStaticsStatusJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgSliceStaticsStatus">
+		SELECT 
+			<include refid="lgSliceStaticsStatusColumns"/>
+		FROM lg_slicestaticsstatus a
+		<include refid="lgSliceStaticsStatusJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgSliceStaticsStatus">
+		SELECT 
+			<include refid="lgSliceStaticsStatusColumns"/>
+		FROM lg_slicestaticsstatus a
+		<include refid="lgSliceStaticsStatusJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_slicestaticsstatus(
+			id,
+			inserttime,
+			devicesliceid,
+			deviceno,
+			sensorno,
+			sensortype,
+			datapointcount,
+			sensordatastart,
+			sensordataend,
+			sensordataduration,
+			changecount
+		) VALUES (
+			#{id},
+			sysdate(),
+			#{deviceSliceId},
+			#{deviceNo},
+			#{sensorNo},
+			#{sensorType},
+			#{dataPointCount},
+			#{sensorDataStart},
+			#{sensorDataEnd},
+			#{sensorDataDuration},
+			#{changeCount}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_slicestaticsstatus SET 	
+			inserttime = #{insertTime},
+			devicesliceid = #{deviceSliceId},
+			deviceno = #{deviceNo},
+			sensorno = #{sensorNo},
+			sensortype = #{sensorType},
+			datapointcount = #{dataPointCount},
+			sensordatastart = #{sensorDataStart},
+			sensordataend = #{sensorDataEnd},
+			sensordataduration = #{sensorDataDuration},
+			changecount = #{changeCount}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_slicestaticsstatus
+		WHERE id = #{id}
+	</update>
+	
+	
+	<select id="getSensor" resultType="java.lang.String">
+		select sensorMark from lg_gpstemplatedetail a where EXISTS (
+				select 1 from lg_machinegpscontrast b where a.gpsTemplateNo=b.gpsTemplateNo and b.deviceNo=#{deviceNo}
+				) and sensorType=3
+	</select>
+	
+	<insert id="batchSave">
+		INSERT INTO lg_slicestaticsstatus(
+			id,
+			inserttime,
+			devicesliceid,
+			deviceno,
+			sensorno,
+			sensortype,
+			datapointcount,
+			sensordatastart,
+			sensordataend,
+			sensordataduration,
+			changecount
+		) VALUES 
+		<foreach collection="list" item="list" index="index" separator="," >  
+		(
+			#{list.id},
+			sysdate(),
+			#{list.deviceSliceId},
+			#{list.deviceNo},
+			#{list.sensorNo},
+			#{list.sensorType},
+			#{list.dataPointCount},
+			#{list.sensorDataStart},
+			#{list.sensorDataEnd},
+			#{list.sensorDataDuration},
+			#{list.changeCount}
+		)
+		</foreach> 
+	</insert>
+	
+	<insert id="batchSaveState">
+		INSERT INTO lg_slicestaticsstatusdetail(
+			id,
+			inserttime,
+			slicestatusid,
+			deviceno,
+			sensorno,
+			status,
+			statuscount,
+			statusduration,
+			statusmax,
+			statusmin,
+			statusavg,
+			status_5,
+			status_25,
+			status_50,
+			status_75,
+			status_95,
+			statusstandard_std,
+			statusvariance_std
+		) VALUES 
+		<foreach collection="list" item="list" index="index" separator="," >  
+		(
+			#{list.id},
+			sysdate(),
+			#{list.sliceStatusId},
+			#{list.deviceNo},
+			#{list.sensorNo},
+			#{list.status},
+			#{list.statusCount},
+			#{list.statusDuration},
+			#{list.statusMax},
+			#{list.statusMin},
+			#{list.statusAvg},
+			#{list.status5},
+			#{list.status25},
+			#{list.status50},
+			#{list.status75},
+			#{list.status95},
+			#{list.statusStandardStd},
+			#{list.statusVarianceStd}
+		)
+    	</foreach> 
+	</insert>
+	
+	<insert id="batchSaveSwitch">
+		INSERT INTO lg_sliceswitchstatusdetail(
+			id,
+			inserttime,
+			slicestatusid,
+			deviceno,
+			sensorno,
+			sourcestatus,
+			deststatus,
+			statuscount,
+			durationmax,
+			durationmin,
+			durationavg,
+			duration_5,
+			duration_25,
+			duration_50,
+			duration_75,
+			durations_95,
+			durationstandard_std,
+			durationvariance_std
+		) VALUES 
+		<foreach collection="list" item="list" index="index" separator="," >  
+		(
+			#{list.id},
+			sysdate(),
+			#{list.sliceStatusId},
+			#{list.deviceNo},
+			#{list.sensorNo},
+			#{list.sourceStatus},
+			#{list.destStatus},
+			#{list.statusCount},
+			#{list.durationMax},
+			#{list.durationMin},
+			#{list.durationAvg},
+			#{list.duration5},
+			#{list.duration25},
+			#{list.duration50},
+			#{list.duration75},
+			#{list.durations95},
+			#{list.durationStandardStd},
+			#{list.durationVarianceStd}
+		)
+    	</foreach>
+	</insert>
+</mapper>

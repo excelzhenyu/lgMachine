@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgMachineTypeDao">
+    
+    
+	<sql id="lgMachineTypeColumns">
+		a.id AS "id",
+		a.machinetype AS "machineType",
+		a.producttype AS "productType",
+		a.ordernumber AS "orderNumber"
+	</sql>
+	
+	<sql id="lgMachineTypeJoins">
+	</sql>
+    
+	<select id="get" resultType="LgMachineType">
+		SELECT 
+			<include refid="lgMachineTypeColumns"/>
+		FROM lg_machinetype a
+		<include refid="lgMachineTypeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgMachineType">
+		SELECT 
+			<include refid="lgMachineTypeColumns"/>
+		FROM lg_machinetype a
+		<include refid="lgMachineTypeJoins"/>
+		<where>
+			
+			<if test="machineType != null and machineType != ''">
+				AND a.machinetype = #{machineType}
+			</if>
+			<if test="productType != null and productType != ''">
+				AND a.producttype = #{productType}
+			</if>
+			<if test="orderNumber != null and orderNumber != ''">
+				AND a.ordernumber = #{orderNumber}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgMachineType">
+		SELECT 
+			<include refid="lgMachineTypeColumns"/>
+		FROM lg_machinetype a
+		<include refid="lgMachineTypeJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getModelNumberList" resultType="LgMachineType">
+		select id,group_concat(distinct productType) as productType from lg_machinetype 
+		where 1=1
+		group by productType
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_machinetype(
+			id,
+			machinetype,
+			producttype,
+			ordernumber
+		) VALUES (
+			#{id},
+			#{machineType},
+			#{productType},
+			#{orderNumber}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_machinetype SET 	
+			machinetype = #{machineType},
+			producttype = #{productType},
+			ordernumber = #{orderNumber}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_machinetype
+		WHERE id = #{id}
+	</update>
+	
+	<select id="selectCountByEntity" resultType="java.lang.Long">
+		SELECT 
+			count(*)
+		FROM lg_machinetype a
+		<include refid="lgMachineTypeJoins"/>
+		<where>
+				AND a.machinetype = #{machineType}
+				AND a.producttype = #{productType}
+				AND a.ordernumber = #{orderNumber}
+		</where>
+	</select>
+	
+	<select id="checkOrderNumber" resultType="LgMachineType">
+		SELECT
+		<include refid="lgMachineTypeColumns" />
+		FROM lg_machinetype a
+		<include refid="lgMachineTypeJoins" />
+		WHERE a.orderNumber = #{orderNumber}
+		<if test="@Ognl@isNotEmpty(id)"> AND id!=#{id}</if>
+		limit 1
+	</select>
+
+	<select id="getProductTypeList" resultType="String">
+		SELECT DISTINCT
+			a.productType AS "productType"
+		FROM
+			lg_machinetype a
+		<where>
+			<if test="machineType != null and machineType != ''">
+				AND a.machinetype = #{machineType}
+			</if>
+		</where>
+		ORDER BY a.productType
+	</select>
+	
+	<select id="getOrderNumberList" resultType="LgMachineType">
+		SELECT DISTINCT
+			a.id AS "id", 
+			a.orderNumber AS "orderNumber"
+		FROM
+			lg_machinetype a
+		<where>
+			<if test="productType != null and productType != ''">
+				AND a.productType = #{productType}
+			</if>
+		</where>
+		GROUP BY a.orderNumber
+		ORDER BY a.orderNumber
+	</select>
+</mapper>

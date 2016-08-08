@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgMachineDimensionDao">
+    
+    
+	<sql id="lgMachineDimensionColumns">
+		a.id AS "id",
+		a.dimensiontype AS "dimensionType",
+		a.dimensioncode AS "dimensionCode",
+		a.dimensionname AS "dimensionName",
+		a.longitude AS "longitude",
+		a.latitude AS "latitude"
+	</sql>
+	
+	<sql id="lgMachineDimensionJoins">
+	</sql>
+    
+    <select id="getMachineDimension" resultType="LgMachineDimension">
+    	select id,dimensionName from lg_machinedimension where dimensionType=#{type}
+    </select>
+    
+	<select id="get" resultType="LgMachineDimension">
+		SELECT 
+			<include refid="lgMachineDimensionColumns"/>
+		FROM lg_machinedimension a
+		<include refid="lgMachineDimensionJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgMachineDimension">
+		SELECT 
+			<include refid="lgMachineDimensionColumns"/>
+		FROM lg_machinedimension a
+		<include refid="lgMachineDimensionJoins"/>
+		<where>
+			
+			<if test="dimensionType != null and dimensionType != ''">
+				AND a.dimensiontype = #{dimensionType}
+			</if>
+			<if test="dimensionCode != null and dimensionCode != ''">
+				AND a.dimensioncode = #{dimensionCode}
+			</if>
+			<if test="dimensionName != null and dimensionName != ''">
+				AND a.dimensionname = #{dimensionName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgMachineDimension">
+		SELECT 
+			<include refid="lgMachineDimensionColumns"/>
+		FROM lg_machinedimension a
+		<include refid="lgMachineDimensionJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_machinedimension(
+			id,
+			dimensiontype,
+			dimensioncode,
+			dimensionname
+		) VALUES (
+			#{id},
+			#{dimensionType},
+			#{dimensionCode},
+			#{dimensionName}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_machinedimension SET 	
+			dimensiontype = #{dimensionType},
+			dimensioncode = #{dimensionCode},
+			dimensionname = #{dimensionName}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_machinedimension
+		WHERE id = #{id}
+	</update>
+	
+	<select id="selectCountByEntity" resultType="java.lang.Long">
+		SELECT 
+			count(*)
+		FROM lg_machinedimension a
+		<include refid="lgMachineDimensionJoins"/>
+		<where>
+				AND a.dimensiontype = #{dimensionType}
+				AND a.dimensioncode = #{dimensionCode}
+		</where>
+	</select>
+</mapper>

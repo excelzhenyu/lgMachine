@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.workcenter.dao.QrtzJobDao">
+    
+	<sql id="qrtzJobColumns">
+		A.`SCHED_NAME` AS "schedName",
+		A.`JOB_NAME` AS "jobName",
+		A.`JOB_GROUP` AS "jobGroup",
+		A.`DESCRIPTION` AS "description",
+		A.`JOB_CLASS_NAME` AS "jobClassName",
+		A.`IS_DURABLE` AS "isDurable",
+		A.`IS_NONCONCURRENT` AS "isNonconcurrent",
+		A.`IS_UPDATE_DATA` AS "isUpdateData",
+		A.`REQUESTS_RECOVERY` AS "requestsRecovery",
+		A.`JOB_DATA` AS "jobData"
+	</sql>
+	
+	<sql id="qrtzJobJoins">
+	</sql>
+    
+	<select id="findList" resultType="QrtzJob">
+		SELECT 
+			<include refid="qrtzJobColumns"/>
+		FROM QRTZ_JOB_DETAILS a
+		<include refid="qrtzJobJoins"/>
+		<where>
+			<if test="schedName != null and schedName != ''">
+				AND A.`SCHED_NAME` LIKE 
+					<if test="dbName == 'oracle'">#{schedName}||'%'</if>
+					<if test="dbName == 'mssql'">#{schedName}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{schedName},'%')</if>
+			</if>
+			<if test="jobName != null and jobName != ''">
+				AND A.`JOB_NAME` LIKE 
+					<if test="dbName == 'oracle'">#{jobName}||'%'</if>
+					<if test="dbName == 'mssql'">#{jobName}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{jobName},'%')</if>
+			</if>
+			<if test="jobGroup != null and jobGroup != ''">
+				AND A.`JOB_GROUP` LIKE 
+					<if test="dbName == 'oracle'">#{jobGroup}||'%'</if>
+					<if test="dbName == 'mssql'">#{jobGroup}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{jobGroup},'%')</if>
+			</if>
+			<if test="description != null and description != ''">
+				AND A.`DESCRIPTION` LIKE 
+					<if test="dbName == 'oracle'">'%'|| #{description}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+ #{description}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%', #{description},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="isFired" resultType="String">
+		SELECT 1 
+		  FROM QRTZ_FIRED_TRIGGERS A
+		 WHERE A.JOB_NAME = #{jobName}
+		   AND A.JOB_GROUP = #{jobGroup}
+	</select>
+	
+</mapper>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.transporthistory.LgMachineTransportHistoryDao">
+    
+	<sql id="lgMachineTransportHistoryColumns">
+		a.id AS "id",
+		a.deviceno AS "deviceNo",
+		a.transportdate AS "transportDate",
+		a.transportunit AS "transportUnit",
+		a.expecteddeliverydate AS "expectedDeliveryDate",
+		a.actualdeliverydate AS "actualDeliveryDate",
+		a.carrier AS "carrier",
+		a.carrierphone AS "carrierPhone",
+		a.vehicleno AS "vehicleNo",
+		a.purchaserunit AS "purchaserUnit",
+		a.purchaseraddress AS "purchaserAddress",
+		a.purchaser AS "purchaser",
+		a.purchaserphone AS "purchaserPhone",
+		a.overflag AS "overflag"
+	</sql>
+	
+	<sql id="lgMachineTransportHistoryJoins">
+	</sql>
+    
+	<select id="get" resultType="LgMachineTransportHistory">
+		SELECT 
+			<include refid="lgMachineTransportHistoryColumns"/>
+		FROM lg_machinetransporthistory a
+		<include refid="lgMachineTransportHistoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgMachineTransportHistory">
+		SELECT 
+			<include refid="lgMachineTransportHistoryColumns"/>
+		FROM lg_machinetransporthistory a
+		<include refid="lgMachineTransportHistoryJoins"/>
+		<where>
+			<if test="deviceNoMult != null and deviceNoMult.length != 0">
+               AND a.deviceNo IN 
+               <foreach item="item" index="index" collection="deviceNoMult" 
+                        open="(" separator="," close=")">
+                   #{item}
+               </foreach>
+           </if>
+           <if test="transportUnitMult != null and transportUnitMult.length != 0">
+               AND a.transportUnit IN 
+               <foreach item="item" index="index" collection="transportUnitMult" 
+                        open="(" separator="," close=")">
+                   #{item}
+               </foreach>
+           </if>
+           <if test="purchaserUnitMult != null and purchaserUnitMult.length != 0">
+               AND a.purchaserUnit IN 
+               <foreach item="item" index="index" collection="purchaserUnitMult" 
+                        open="(" separator="," close=")">
+                   #{item}
+               </foreach>
+           </if>
+           <if test="transportDateBegin != null">
+             <![CDATA[AND a.transportDate >= #{transportDateBegin}]]>
+           </if>
+           <if test="transportDateEnd != null">
+             <![CDATA[AND a.transportDate < #{transportDateEnd}]]>
+           </if>
+           <if test="overflag != null">
+             AND a.overflag = #{overflag}
+           </if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgMachineTransportHistory">
+		SELECT 
+			<include refid="lgMachineTransportHistoryColumns"/>
+		FROM lg_machinetransporthistory a
+		<include refid="lgMachineTransportHistoryJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_machinetransporthistory(
+			id,
+			deviceno,
+			transportdate,
+			transportunit,
+			expecteddeliverydate,
+			actualdeliverydate,
+			carrier,
+			carrierphone,
+			vehicleno,
+			purchaserunit,
+			purchaseraddress,
+			purchaser,
+			purchaserphone,
+			overflag
+		) VALUES (
+			#{id},
+			#{deviceno},
+			#{transportdate},
+			#{transportunit},
+			#{expecteddeliverydate},
+			#{actualdeliverydate},
+			#{carrier},
+			#{carrierphone},
+			#{vehicleno},
+			#{purchaserunit},
+			#{purchaseraddress},
+			#{purchaser},
+			#{purchaserphone},
+			#{overflag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_machinetransporthistory SET 	
+			deviceno = #{deviceno},
+			transportdate = #{transportdate},
+			transportunit = #{transportunit},
+			expecteddeliverydate = #{expecteddeliverydate},
+			actualdeliverydate = #{actualdeliverydate},
+			carrier = #{carrier},
+			carrierphone = #{carrierphone},
+			vehicleno = #{vehicleno},
+			purchaserunit = #{purchaserunit},
+			purchaseraddress = #{purchaseraddress},
+			purchaser = #{purchaser},
+			purchaserphone = #{purchaserphone},
+			overflag = #{overflag}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_machinetransporthistory
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getSingleData" resultType="LgMachineTransportHistory">
+        SELECT b.modelNumber AS "productType",
+               b.orderNumber AS "orderNumber",
+               (SELECT dimensionName FROM lg_machinedimension t WHERE a.transportUnit = t.id) AS "transportUnitName",
+               (SELECT dimensionName FROM lg_machinedimension t WHERE a.transportUnit = t.id) AS "purchaserUnitName",
+            <include refid="lgMachineTransportHistoryColumns"/>
+        FROM lg_machinetransporthistory a
+        LEFT JOIN lg_machineprofile b ON a.deviceNo = b.`code`
+        <where>
+            <if test="deviceNo != null and deviceNo != ''">
+                AND a.deviceNo = #{deviceNo}
+            </if>
+        </where>
+    </select>
+    
+    <select id="getTNPLocation" resultType="LgMachineTransportHistory">
+        SELECT a.deviceNo,
+               t.longitude AS "transportLng",
+               t.latitude AS "transportLat",
+               p.longitude AS "purchaserLng",
+               p.latitude AS "purchaserLat"
+          FROM lg_machinetransporthistory a
+          LEFT JOIN lg_machinedimension t ON a.transportUnit = t.id
+          LEFT JOIN lg_machinedimension p ON a.purchaserUnit = p.id
+         WHERE a.deviceNo = #{deviceNo}
+    </select>
+	
+</mapper>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.distinguish.LgDistinguishmissandfalserecordDao">
+    
+	<sql id="lgDistinguishmissandfalserecordColumns">
+		a.id AS "id",
+		a.distinguishid AS "distinguishId",
+		a.solutiontype AS "solutionType",
+		a.deviceno AS "deviceNo",
+		a.machinetype AS "machineType",
+		a.producttype AS "productType",
+		a.orderno AS "orderNo",
+		a.saleid AS "saleId",
+		a.salename AS "saleName",
+		a.info AS "info",
+		a.confirmdate AS "confirmDate",
+		a.confirmstate AS "confirmState",
+		a.operator AS "operator",
+		a.operatedate AS "operateDate",
+		a.operateinfo AS "operateInfo"
+	</sql>
+	
+	<sql id="lgDistinguishmissandfalserecordJoins">
+	</sql>
+    
+	<select id="get" resultType="LgDistinguishmissandfalserecord">
+		SELECT 
+			<include refid="lgDistinguishmissandfalserecordColumns"/>
+		FROM lg_distinguishmissandfalserecord a
+		<include refid="lgDistinguishmissandfalserecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgDistinguishmissandfalserecord">
+		SELECT 
+			<include refid="lgDistinguishmissandfalserecordColumns"/>
+		FROM lg_distinguishmissandfalserecord a
+		<include refid="lgDistinguishmissandfalserecordJoins"/>
+		<where>
+			
+			<if test="orderNo != null and orderNo != ''">
+				AND a.orderno = #{orderNo}
+			</if>
+			<if test="saleName != null and saleName != ''">
+				AND a.salename = #{saleName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgDistinguishmissandfalserecord">
+		SELECT 
+			<include refid="lgDistinguishmissandfalserecordColumns"/>
+		FROM lg_distinguishmissandfalserecord a
+		<include refid="lgDistinguishmissandfalserecordJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="queryCounts" resultType="LgFalseStatistics">
+		select a.machineType,a.productType AS 'modelNumber',sum(case when a.solutionType='1' then 1 else 0 end) AS 'falseNumbers',sum(case when a.confirmState='3' then 1 else 0 end) AS 'confirmNumbers',
+		sum(case when a.confirmState='2' then 1 else 0 end) AS 'errorNumbers',
+		sum(case when a.confirmState='1' then 1 else 0 end) AS 'unconfirmNumbers' 
+		from lg_distinguishmissandfalserecord a where a.machineType=#{type} and a.solutionType=#{solutionType} and a.confirmDate&lt;'2016-07-15'  group by a.productType
+	</select>
+	
+	<select id="querySaleCount" resultType="LgFalseStatistics">
+		select d.label AS 'machineTypeName',a.saleName AS 'saleName',sum(case when a.solutionType='1' then 1 else 0 end) AS 'falseNumbers',sum(case when a.confirmState='3' then 1 else 0 end) AS 'confirmNumbers',
+		sum(case when a.confirmState='2' then 1 else 0 end) AS 'errorNumbers',
+		sum(case when a.confirmState='1' then 1 else 0 end) AS 'unconfirmNumbers' 
+		from lg_distinguishmissandfalserecord a
+		left join sys_dict d on d.value=a.machineType
+		where d.type='machineType'
+		and a.machineType=#{type} and a.solutionType=#{solutionType}
+		 group by a.saleName,a.machineType order by a.machineType
+	</select>
+	
+	<select id="queryWjjNumbers" resultType="LgFalseStatistics">
+		select sum(case when a.solutionType='1' then 1 else 0 end) AS 'wjjFalseNumbers',sum(case when a.confirmState='3' then 1 else 0 end) AS 'wjjConfirmNumbers',
+		sum(case when a.confirmState='2' then 1 else 0 end) AS 'wjjErrorNumbers',
+		sum(case when a.confirmState='1' then 1 else 0 end) AS 'wjjUnconfirmNumbers' 
+		from lg_distinguishmissandfalserecord a where a.confirmDate&lt;'2016-07-15' and a.machineType=0 and a.solutionType=#{solutionType}
+	</select>
+	
+	<select id="queryZzjNumbers" resultType="LgFalseStatistics">
+		select sum(case when a.solutionType='1' then 1 else 0 end) AS 'zzjFalseNumbers',sum(case when a.confirmState='3' then 1 else 0 end) AS 'zzjConfirmNumbers',
+		sum(case when a.confirmState='2' then 1 else 0 end) AS 'zzjErrorNumbers',
+		sum(case when a.confirmState='1' then 1 else 0 end) AS 'zzjUnconfirmNumbers' 
+		from lg_distinguishmissandfalserecord a where a.confirmDate&lt;'2016-07-15'and a.machineType=1 and a.solutionType=#{solutionType}
+	</select>
+	
+	<select id="queryTotalNumbers" resultType="LgFalseStatistics">
+		select sum(case when a.solutionType='1' then 1 else 0 end) AS 'totalFalseNumbers',sum(case when a.confirmState='3' then 1 else 0 end) AS 'totalConfirmNumbers',
+		sum(case when a.confirmState='2' then 1 else 0 end) AS 'totalErrorNumbers',
+		sum(case when a.confirmState='1' then 1 else 0 end) AS 'totalUnconfirmNumbers' 
+		from lg_distinguishmissandfalserecord a where a.confirmDate&lt;'2016-07-15' and a.solutionType=#{solutionType}
+	</select>
+	
+	<select id="getModalList" resultType="LgDistinguishmissandfalserecord">
+		select * from lg_distinguishmissandfalserecord a where a.productType=#{modelNumber} and a.solutionType=#{solutionType}
+	</select>
+	
+	<select id="getSaleModal" resultType="LgDistinguishmissandfalserecord">
+		select * from lg_distinguishmissandfalserecord a where a.saleName=#{saleName} and a.solutionType=#{solutionType}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_distinguishmissandfalserecord(
+			id,
+			distinguishid,
+			solutiontype,
+			deviceno,
+			machinetype,
+			producttype,
+			orderno,
+			saleid,
+			salename,
+			info,
+			confirmdate,
+			confirmstate,
+			operator,
+			operatedate,
+			operateinfo
+		) VALUES (
+			#{id},
+			#{distinguishId},
+			#{solutionType},
+			#{deviceNo},
+			#{machineType},
+			#{productType},
+			#{orderNo},
+			#{saleId},
+			#{saleName},
+			#{info},
+			#{confirmDate},
+			#{confirmState},
+			#{operator},
+			#{operateDate},
+			#{operateInfo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_distinguishmissandfalserecord SET 	
+			distinguishid = #{distinguishId},
+			solutiontype = #{solutionType},
+			deviceno = #{deviceNo},
+			machinetype = #{machineType},
+			producttype = #{productType},
+			orderno = #{orderNo},
+			saleid = #{saleId},
+			salename = #{saleName},
+			info = #{info},
+			confirmdate = #{confirmDate},
+			confirmstate = #{confirmState},
+			operator = #{operator},
+			operatedate = #{operateDate},
+			operateinfo = #{operateInfo}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_distinguishmissandfalserecord
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

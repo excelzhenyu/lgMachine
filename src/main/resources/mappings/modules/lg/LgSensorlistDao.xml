@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgSensorlistDao">
+    
+	<sql id="lgSensorlistColumns">
+		a.id AS "id",
+		a.machineid AS "machineId",
+		a.sensorcode AS "sensorCode",
+		a.sensorpin AS "sensorPIN",
+		a.sensorname AS "sensorName",
+		a.stopmark AS "stopMark",
+		a.starttime AS "startTime",
+		a.stoptime AS "stopTime",
+		a.sensorType AS "sensorType"
+	</sql>
+	
+	<sql id="lgSensorlistJoins">
+	</sql>
+    
+	<select id="get" resultType="LgSensorlist">
+		SELECT 
+			<include refid="lgSensorlistColumns"/>
+		FROM lg_sensorlist a
+		<include refid="lgSensorlistJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgSensorlistVO">
+		SELECT 
+			<include refid="lgSensorlistColumns"/>,b.pinCode AS "pinCode",b.name AS "name"
+		FROM lg_sensorlist a LEFT JOIN lg_machineprofile b ON a.machineId = b.id
+		<include refid="lgSensorlistJoins"/>
+		<where>
+			AND a.stopMark = 1
+			<if test="sensorPIN != null and sensorPIN != ''">
+				AND a.sensorpin = #{sensorPIN}
+			</if>
+			<if test="sensorName != null and sensorName != ''">
+				AND a.sensorname = #{sensorName}
+			</if>
+			<if test="machineId != null and machineId != ''">
+				AND a.machineId = #{machineId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgSensorlist">
+		SELECT 
+			<include refid="lgSensorlistColumns"/>
+		FROM lg_sensorlist a
+		<include refid="lgSensorlistJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_sensorlist(
+			id,
+			machineid,
+			sensorcode,
+			sensorpin,
+			sensorname,
+			stopmark,
+			starttime,
+			stoptime,
+			sensorType
+		) VALUES (
+			#{id},
+			#{machineId},
+			#{sensorCode},
+			#{sensorPIN},
+			#{sensorName},
+			1,
+			#{startTime},
+			#{stopTime},
+			#{sensorType}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_sensorlist SET 	
+			machineid = #{machineId},
+			sensorcode = #{sensorCode},
+			sensorpin = #{sensorPIN},
+			sensorname = #{sensorName},
+			stopmark = #{stopMark},
+			starttime = #{startTime},
+			stoptime = #{stopTime},
+			sensorType = #{sensorType}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateStopSensor">
+		UPDATE lg_sensorlist SET
+			stopmark = 0
+		WHERE id=#{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_sensorlist
+		WHERE id = #{id}
+	</update>
+	
+	<select id="checkSensorCode" resultType="LgSensorlist">
+		SELECT
+		<include refid="lgSensorlistColumns" />
+		FROM lg_sensorlist a
+		<include refid="lgSensorlistJoins" />
+		WHERE a.sensorCode = #{sensorCode} AND a.stopMark=1
+		<if test="@Ognl@isNotEmpty(id)"> AND id!=#{id}</if>
+		limit 1
+	</select>
+	
+	<select id="checkSensorPin" resultType="LgSensorlist">
+		SELECT
+		<include refid="lgSensorlistColumns" />
+		FROM lg_sensorlist a
+		<include refid="lgSensorlistJoins" />
+		WHERE a.sensorPin = #{sensorPIN} AND a.stopMark=1
+		<if test="@Ognl@isNotEmpty(id)"> AND id!=#{id}</if>
+		limit 1
+	</select>
+	
+	<select id="getSensorListBySensorType" resultType="java.lang.String"> 
+		select sensorCode from lg_sensorlist a where a.sensorType=#{sensorType} and exists (
+			select 1 from lg_machineprofile b where a.machineId=b.id and b.code=#{deviceNo}
+		)
+	</select>
+</mapper>

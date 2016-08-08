@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.slice.LgSliceSwitchStatusDetailDao">
+    
+	<sql id="lgSliceSwitchStatusDetailColumns">
+		a.id AS "id",
+		a.inserttime AS "insertTime",
+		a.slicestatusid AS "sliceStatusId",
+		a.deviceno AS "deviceNo",
+		a.sensorno AS "sensorNo",
+		a.sourcestatus AS "sourceStatus",
+		a.deststatus AS "destStatus",
+		a.statuscount AS "statusCount",
+		a.durationmax AS "durationMax",
+		a.durationmin AS "durationMin",
+		a.durationavg AS "durationAvg",
+		a.duration_5 AS "duration5",
+		a.duration_25 AS "duration25",
+		a.duration_50 AS "duration50",
+		a.duration_75 AS "duration75",
+		a.durations_95 AS "durations95",
+		a.durationstandard_std AS "durationStandardStd",
+		a.durationvariance_std AS "durationVarianceStd"
+	</sql>
+	
+	<sql id="lgSliceSwitchStatusDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="LgSliceSwitchStatusDetail">
+		SELECT 
+			<include refid="lgSliceSwitchStatusDetailColumns"/>
+		FROM lg_sliceswitchstatusdetail a
+		<include refid="lgSliceSwitchStatusDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgSliceSwitchStatusDetail">
+		SELECT 
+			<include refid="lgSliceSwitchStatusDetailColumns"/>
+		FROM lg_sliceswitchstatusdetail a
+		<include refid="lgSliceSwitchStatusDetailJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgSliceSwitchStatusDetail">
+		SELECT 
+			<include refid="lgSliceSwitchStatusDetailColumns"/>
+		FROM lg_sliceswitchstatusdetail a
+		<include refid="lgSliceSwitchStatusDetailJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_sliceswitchstatusdetail(
+			id,
+			inserttime,
+			slicestatusid,
+			deviceno,
+			sensorno,
+			sourcestatus,
+			deststatus,
+			statuscount,
+			durationmax,
+			durationmin,
+			durationavg,
+			duration_5,
+			duration_25,
+			duration_50,
+			duration_75,
+			durations_95,
+			durationstandard_std,
+			durationvariance_std
+		) VALUES (
+			#{id},
+			sysdate(),
+			#{sliceStatusId},
+			#{deviceNo},
+			#{sensorNo},
+			#{sourceStatus},
+			#{destStatus},
+			#{statusCount},
+			#{durationMax},
+			#{durationMin},
+			#{durationAvg},
+			#{duration5},
+			#{duration25},
+			#{duration50},
+			#{duration75},
+			#{durations95},
+			#{durationStandardStd},
+			#{durationVarianceStd}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_sliceswitchstatusdetail SET 	
+			inserttime = #{insertTime},
+			slicestatusid = #{sliceStatusId},
+			deviceno = #{deviceNo},
+			sensorno = #{sensorNo},
+			sourcestatus = #{sourceStatus},
+			deststatus = #{destStatus},
+			statuscount = #{statusCount},
+			durationmax = #{durationMax},
+			durationmin = #{durationMin},
+			durationavg = #{durationAvg},
+			duration_5 = #{duration5},
+			duration_25 = #{duration25},
+			duration_50 = #{duration50},
+			duration_75 = #{duration75},
+			durations_95 = #{durations95},
+			durationstandard_std = #{durationStandardStd},
+			durationvariance_std = #{durationVarianceStd}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_sliceswitchstatusdetail
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgRepairhistoryDao">
+    
+	<sql id="lgRepairhistoryColumns">
+		a.id AS "id",
+		a.machineid AS "machineId",
+		a.repairtime AS "repairTime",
+		a.orderno AS "orderNo",
+		a.orderhuman AS "orderHuman",
+		a.troubleinfo AS "troubleInfo",
+		a.feedback AS "feedBack"
+	</sql>
+	
+	<sql id="lgRepairhistoryJoins">
+	</sql>
+    
+	<select id="get" resultType="LgRepairhistory">
+		SELECT 
+			<include refid="lgRepairhistoryColumns"/>
+		FROM lg_repairhistory a
+		<include refid="lgRepairhistoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgRepairhistory">
+		SELECT 
+			<include refid="lgRepairhistoryColumns"/>
+		FROM lg_repairhistory a
+		<include refid="lgRepairhistoryJoins"/>
+		<where>
+			<if test="machineId != null and machineId != ''">
+				AND a.machineId = #{machineId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgRepairhistory">
+		SELECT 
+			<include refid="lgRepairhistoryColumns"/>
+		FROM lg_repairhistory a
+		<include refid="lgRepairhistoryJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_repairhistory(
+			id,
+			machineid,
+			repairtime,
+			orderno,
+			orderhuman,
+			troubleinfo,
+			feedback
+		) VALUES (
+			#{id},
+			#{machineId},
+			#{repairTime},
+			#{orderNo},
+			#{orderHuman},
+			#{troubleInfo},
+			#{feedBack}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_repairhistory SET 	
+			machineid = #{machineId},
+			repairtime = #{repairTime},
+			orderno = #{orderNo},
+			orderhuman = #{orderHuman},
+			troubleinfo = #{troubleInfo},
+			feedback = #{feedBack}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_repairhistory
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

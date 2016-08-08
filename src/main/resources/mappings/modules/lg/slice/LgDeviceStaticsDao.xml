@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.slice.LgDeviceStaticsDao">
+    <sql id="lgDeviceSliceStaticsColumns">
+		a.id AS "id",
+		a.inserttime AS "insertTime",
+		a.deviceno AS "deviceNo",
+		a.slicecount AS "sliceCount",
+		a.slicestart AS "sliceStart",
+		a.slicestop AS "sliceStop",
+		a.slicerunduration AS "sliceRunDuration",
+		a.sliceworkduration AS "sliceWorkDuration",
+		a.latitudes AS "latitudes",
+		a.longitude AS "longitude",
+		a.province AS "province",
+		a.city AS "city",
+		a.address AS "address",
+		a.position AS "position",
+		a.alarmcount AS "alarmCount"
+	</sql>
+	<select id="getSliceStatics" resultType="LgDeviceSliceStatics"> 
+		select 
+			<include refid="lgDeviceSliceStaticsColumns"/>
+		from lg_deviceslicestatics a  
+		where  
+			<!-- (a.slicestop is null and date(#{recordTime}) >= date(a.slicestart)) 
+			or (date(#{recordTime}) between date(a.slicestart) and date(a.slicestop))
+			-->
+			<!-- 
+			date(#{recordTime}) between date(a.slicestart) and date(a.slicestop)
+			 -->
+			 date(a.slicestop) = date(#{recordTime})
+			 
+		order by a.deviceno,a.slicestart
+	</select>
+	
+	<insert id="saveDeviceWeekStatics" >
+		INSERT INTO lg_deviceweekstatics
+		SELECT
+		  replace(uuid(),'-','') as id,
+		  sysdate(),
+		  y.deviceno,
+		  #{workDateId},
+		  #{workDateName},
+		  #{dateBegin},
+		  #{dateEnd},
+		  x.workcount,
+		  x.workbegin,
+		  x.workstop,
+		  x.slicerunduration,
+		  x.sliceworkduration,
+		  x.runoffcount,
+		  x.oilsum,
+		  x.oilavg,
+		  x.rotationlspeedmax,
+		  y.latitudes,
+		  y.longitude,
+		  y.province,
+		  y.city,
+		  y.address,
+		  y.position,
+		  x.alarmcount
+		FROM
+		(SELECT
+		  count(1) AS workcount,
+		  min(a.workbegin) AS workbegin,
+		  max(a.workstop) AS workstop,
+		  sum(a.slicerunduration) AS slicerunduration,
+		  sum(a.sliceworkduration) AS sliceworkduration,
+		  sum(a.runoffcount) AS runoffcount,
+		  sum(a.oilsum) AS oilsum,
+		  sum(a.oilavg)/count(1) AS oilavg,
+		  max(a.rotationlspeedmax) AS rotationlspeedmax,
+		  sum(a.alarmcount) AS alarmcount
+		  FROM lg_deviceDateStatics a
+		  where  a.runoffcount > 0
+		    And a.deviceno = #{deviceNo}
+		    AND a.workdate between #{dateBegin} and #{dateEnd}
+		  GROUP BY a.deviceno
+		  LIMIT 1
+		) x,
+		(SELECT
+		  b.id,
+		  b.inserttime,
+		  b.deviceno,
+		  b.workdate,
+		  b.latitudes,
+		  b.longitude,
+		  b.province,
+		  b.city,
+		  b.address,
+		  b.position,
+		  b.alarmcount
+		  FROM lg_deviceDateStatics b
+		  where b.workdate BETWEEN #{dateBegin} and #{dateEnd}
+		    And deviceno = #{deviceNo}
+		    and runoffcount > 0
+		  order by workdate desc
+		  LIMIT 1
+		) y
+		
+	</insert>
+	
+	<insert id="saveDeviceMonthStatics" >
+		INSERT INTO lg_devicemonthstatics
+		SELECT
+		  replace(uuid(),'-','') as id,
+		  sysdate(),
+		  y.deviceno,
+		  #{workDateId},
+		  #{workDateName},
+		  x.workcount,
+		  x.workbegin,
+		  x.workstop,
+		  x.slicerunduration,
+		  x.sliceworkduration,
+		  x.runoffcount,
+		  x.oilsum,
+		  x.oilavg,
+		  x.rotationlspeedmax,
+		  y.latitudes,
+		  y.longitude,
+		  y.province,
+		  y.city,
+		  y.address,
+		  y.position,
+		  x.alarmcount
+		FROM
+		(SELECT
+		  count(1) AS workcount,
+		  min(a.workbegin) AS workbegin,
+		  max(a.workstop) AS workstop,
+		  sum(a.slicerunduration) AS slicerunduration,
+		  sum(a.sliceworkduration) AS sliceworkduration,
+		  sum(a.runoffcount) AS runoffcount,
+		  sum(a.oilsum) AS oilsum,
+		  sum(a.oilavg)/count(1) AS oilavg,
+		  max(a.rotationlspeedmax) AS rotationlspeedmax,
+		  sum(a.alarmcount) AS alarmcount
+		  FROM lg_deviceDateStatics a
+		  where a.runoffcount > 0
+		    And a.deviceno = #{deviceNo}
+		    AND a.workdate between #{dateBegin} and #{dateEnd}
+		  GROUP BY a.deviceno
+		   LIMIT 1
+		) x,
+		(SELECT
+		  b.id,
+		  b.inserttime,
+		  b.deviceno,
+		  b.workdate,
+		  b.latitudes,
+		  b.longitude,
+		  b.province,
+		  b.city,
+		  b.address,
+		  b.position,
+		  b.alarmcount
+		  FROM lg_deviceDateStatics b
+		  where b.workdate BETWEEN #{dateBegin} and #{dateEnd}
+		    And deviceno = #{deviceNo}
+		    and runoffcount > 0
+		  order by workdate desc
+		  LIMIT 1
+		) y
+
+	</insert>
+	
+	
+	<insert id="saveDeviceSeasonStatics" >
+		INSERT INTO lg_deviceseasonstatics
+		SELECT
+		  replace(uuid(),'-','') as id,
+		  sysdate(),
+		  y.deviceno,
+		  #{workDateId},
+		  #{workDateName},
+		  x.workcount,
+		  x.workbegin,
+		  x.workstop,
+		  x.slicerunduration,
+		  x.sliceworkduration,
+		  x.runoffcount,
+		  x.oilsum,
+		  x.oilavg,
+		  x.rotationlspeedmax,
+		  y.latitudes,
+		  y.longitude,
+		  y.province,
+		  y.city,
+		  y.address,
+		  y.position,
+		  x.alarmcount
+		FROM
+		(SELECT
+		  sum(a.workcount) as workcount,
+		  min(a.workbegin) AS workbegin,
+		  max(a.workstop) AS workstop,
+		  sum(a.slicerunduration) AS slicerunduration,
+		  sum(a.sliceworkduration) AS sliceworkduration,
+		  sum(a.runoffcount) AS runoffcount,
+		  sum(a.oilsum) AS oilsum,
+		  sum(a.oilavg)/count(1) AS oilavg,
+		  max(a.rotationlspeedmax) AS rotationlspeedmax,
+		  sum(a.alarmcount) AS alarmcount
+		  FROM lg_devicemonthstatics a
+		    where a.runoffcount > 0
+		    And a.deviceno = #{deviceNo}
+		    AND a.workMonthId  between #{beginWorkId} and #{endWorkId}
+		  GROUP BY a.deviceno
+		  LIMIT 1
+		) x,
+		(SELECT
+		  b.id,
+		  b.inserttime,
+		  b.deviceno,
+		  b.latitudes,
+		  b.longitude,
+		  b.province,
+		  b.city,
+		  b.address,
+		  b.position,
+		  b.alarmcount
+		  FROM lg_devicemonthstatics b
+          where b.workMonthId between #{beginWorkId} and #{endWorkId}
+		    And b.deviceno = #{deviceNo}
+		    and b.runoffcount > 0
+		  order by b.workMonthId desc
+		  LIMIT 1
+		) y
+
+	</insert>
+	
+	
+	<insert id="saveDeviceYearStatics" >
+		INSERT INTO lg_deviceyearstatics
+		  SELECT
+		    replace(uuid(),'-','') as id,
+		    sysdate(),
+		    y.deviceno,
+		    #{workDateId},
+		    #{workDateName},
+		    x.workcount,
+		    x.workbegin,
+		    x.workstop,
+		    x.slicerunduration,
+		    x.sliceworkduration,
+		    x.runoffcount,
+		    x.oilsum,
+		    x.oilavg,
+		    x.rotationlspeedmax,
+		    y.latitudes,
+		    y.longitude,
+		    y.province,
+		    y.city,
+		    y.address,
+		    y.position,
+		    x.alarmcount
+		  FROM
+		  (SELECT
+		  	sum(a.workcount) as workcount,
+		    min(a.workbegin) AS workbegin,
+		    max(a.workstop) AS workstop,
+		    sum(a.slicerunduration) AS slicerunduration,
+		    sum(a.sliceworkduration) AS sliceworkduration,
+		    sum(a.runoffcount) AS runoffcount,
+		    sum(a.oilsum) AS oilsum,
+		    sum(a.oilavg)/count(1) AS oilavg,
+		    max(a.rotationlspeedmax) AS rotationlspeedmax,
+		    sum(a.alarmcount) AS alarmcount
+		    FROM lg_deviceseasonstatics a
+		      where a.runoffcount > 0
+		      And a.deviceno = #{deviceNo}
+		      AND a.workQuarterId  between #{beginWorkId} and #{endWorkId}
+		    GROUP BY a.deviceno
+		    LIMIT 1
+		  ) x,
+		  (SELECT
+		    b.id,
+		    b.inserttime,
+		    b.deviceno,
+		    b.latitudes,
+		    b.longitude,
+		    b.province,
+		    b.city,
+		    b.address,
+		    b.position,
+		    b.alarmcount
+		    FROM lg_deviceseasonstatics b
+		      where b.workQuarterId between #{beginWorkId} and #{endWorkId}
+		      And b.deviceno = #{deviceNo}
+		      and b.runoffcount > 0
+		    order by b.workQuarterId desc
+		    LIMIT 1
+		  ) y
+	</insert>
+	
+</mapper>

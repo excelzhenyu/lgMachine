@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.exptmachine.LgExptMachineProfileDao">
+    <sql id="lgMachineprofileColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.pincode AS "pinCode",
+		a.shortname AS "shortName",
+		a.name AS "name",
+		a.enname AS "enName",
+		a.modelnumber AS "modelNumber",
+		a.ordernumber AS "orderNumber",
+		a.machinetype AS "machineType",
+		a.certificationnumber AS "certificationNumber",
+		a.machinestatus AS "machineStatus",
+		a.statusdetail AS "statusDetail",
+		a.productdate AS "productDate",
+		a.servicefilenumber AS "serviceFileNumber",
+		a.filecreatedate AS "fileCreatedate",
+		a.bookbuildingid AS "bookBuildingId",
+		a.saleareaid AS "saleAreaId",
+		a.saletype AS "saleType",
+		a.saleunitid AS "saleUnitId",
+		a.saledate AS "saleDate",
+		a.customerid AS "customerId",
+		a.productfactoryid AS "productFactoryId",
+		a.batchnumber AS "batchNumber",
+		a.producttype AS "productType",
+		a.smartterminalornot AS "smartTerminalOrNot",
+		a.transmitcode AS "transmitCode",
+		a.stopservicemark AS "stopServiceMark",
+		a.imgUrl AS "imgUrl",
+		a.labMark AS "labMark",
+		a.labStartTime AS "labStartTime",
+		a.labEndTime AS "labEndTime",
+		b.dimensionName as "customerName",
+		c.dimensionName as "bookBuildingName",
+		d.dimensionName as "saleUnitName"
+	</sql>
+	<sql id="lgMachineprofileJoins">
+	</sql>
+    
+	<select id="findList" resultType="LgMachineprofileVO">
+		SELECT 
+			<include refid="lgMachineprofileColumns"/>
+		FROM lg_machineprofile a
+		<include refid="lgMachineprofileJoins"/>
+		left join lg_machinedimension b on a.customerId = b.id
+		left join lg_machinedimension c on a.bookBuildingId = c.id
+		left join lg_machinedimension d on a.saleUnitId=d.id
+		left join (
+			select deviceNo, sum(sliceRunduration) as sliceRunduration from lg_devicedatestatics WHERE date(workdate)=DATE_SUB(CURDATE(),INTERVAL 1 day) GROUP BY deviceNo
+		) e on a.code=e.deviceNo 
+		<where>		
+			and EXISTS (
+				select 1 machineid from lg_exptmachinepickdetail e where EXISTS (
+					select 1 from lg_exptmachinepick f  where e.pickid=f.id
+				)
+				and a.id=e.machineid
+			)
+		</where>
+		order by e.sliceRunduration desc
+	</select>
+</mapper>

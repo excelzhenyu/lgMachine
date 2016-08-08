@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.workcenter.dao.SliceLogDao">
+    
+	<sql id="sliceLogColumns">
+		a.id AS "id",
+		a.inserttime AS "insertTime",
+		a.workcenter AS "workCenter",
+		a.jobName AS "jobName",
+		a.start AS "start",
+		a.jobGroup AS "jobGroup",
+		a.end AS "end",
+		a.writecount AS "writeCount",
+		a.errorcount AS "errorCount",
+		a.log AS "log"
+	</sql>
+	
+	<sql id="sliceLogJoins">
+	</sql>
+    
+	<select id="get" resultType="SliceLog">
+		SELECT 
+			<include refid="sliceLogColumns"/>
+		FROM slicelog a
+		<include refid="sliceLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SliceLog">
+		SELECT 
+			<include refid="sliceLogColumns"/>
+		FROM slicelog a
+		<include refid="sliceLogJoins"/>
+		<where>
+			<if test="jobGroup != null and jobGroup != ''">
+				AND a.jobGroup = #{jobGroup} 
+			</if>
+			<if test="beginInsertTime != null and endInsertTime != null and beginInsertTime != '' and endInsertTime != ''">
+				AND a.inserttime BETWEEN #{beginInsertTime} AND #{endInsertTime}
+			</if>
+			<if test="workCenter != null and workCenter != ''">
+				AND a.workcenter LIKE 
+					<if test="dbName == 'oracle'">#{workCenter}||'%'</if>
+					<if test="dbName == 'mssql'">#{workCenter}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{workCenter},'%')</if>
+			</if>
+			<if test="jobName != null and jobName != ''">
+				AND a.jobName LIKE 
+					<if test="dbName == 'oracle'">#{jobName}||'%'</if>
+					<if test="dbName == 'mssql'">#{jobName}+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{jobName},'%')</if>
+			</if>
+			<if test="beginStart != null and endStart != null and beginStart != '' and endStart != ''">
+				AND a.start BETWEEN #{beginStart} AND #{endStart}
+			</if>
+			<if test="beginEnd != null and endEnd != null and beginEnd != '' and endEnd != ''">
+				AND a.end BETWEEN #{beginEnd} AND #{endEnd}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SliceLog">
+		SELECT 
+			<include refid="sliceLogColumns"/>
+		FROM slicelog a
+		<include refid="sliceLogJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO slicelog(
+			id,
+			insertTime,
+			workcenter,
+			jobName,
+			start,
+			jobGroup,
+			end,
+			writecount,
+			errorcount,
+			log
+		) VALUES (
+			#{id},
+			#{insertTime},
+			#{workCenter},
+			#{jobName},
+			#{start},
+			#{jobGroup},
+			#{end},
+			#{writeCount},
+			#{errorCount},
+			#{log}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE slicelog SET 	
+			inserttime = #{insertTime},
+			workcenter = #{workCenter},
+			jobName = #{jobName},
+			start = #{start},
+			jobGroup = #{jobGroup},
+			end = #{end},
+			writecount = #{writeCount},
+			errorcount = #{errorCount},
+			log = #{log}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM slicelog
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

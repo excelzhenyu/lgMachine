@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.slice.LgDeviceWeekStaticsDao">
+    
+	<sql id="lgDeviceWeekStaticsColumns">
+		a.id AS "id",
+		a.inserttime AS "insertTime",
+		a.deviceno AS "deviceNo",
+		a.workweekid AS "workWeekId",
+		a.workweekname AS "workWeekName",
+		a.weekbegin AS "weekBegin",
+		a.weekend AS "weekEnd",
+		a.workcount AS "workCount",
+		a.workbegin AS "workBegin",
+		a.workstop AS "workStop",
+		a.slicerunduration AS "sliceRunDuration",
+		a.sliceworkduration AS "sliceWorkDuration",
+		a.runoffcount AS "runOffCount",
+		a.oilsum AS "oilSum",
+		a.oilavg AS "oilAvg",
+		a.rotationlspeedmax AS "rotationlSpeedMax",
+		a.latitudes AS "latitudes",
+		a.longitude AS "longitude",
+		a.province AS "province",
+		a.city AS "city",
+		a.address AS "address",
+		a.position AS "position",
+		a.alarmcount AS "alarmCount"
+	</sql>
+	
+	<sql id="lgDeviceWeekStaticsJoins">
+	</sql>
+    
+	<select id="get" resultType="LgDeviceWeekStatics">
+		SELECT 
+			<include refid="lgDeviceWeekStaticsColumns"/>
+		FROM lg_deviceweekstatics a
+		<include refid="lgDeviceWeekStaticsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgDeviceWeekStatics">
+		SELECT 
+			<include refid="lgDeviceWeekStaticsColumns"/>
+		FROM lg_deviceweekstatics a
+		<include refid="lgDeviceWeekStaticsJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgDeviceWeekStatics">
+		SELECT 
+			<include refid="lgDeviceWeekStaticsColumns"/>
+		FROM lg_deviceweekstatics a
+		<include refid="lgDeviceWeekStaticsJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_deviceweekstatics(
+			id,
+			inserttime,
+			deviceno,
+			workweekid,
+			workweekname,
+			weekbegin,
+			weekend,
+			workcount,
+			workbegin,
+			workstop,
+			slicerunduration,
+			sliceworkduration,
+			runoffcount,
+			oilsum,
+			oilavg,
+			rotationlspeedmax,
+			latitudes,
+			longitude,
+			province,
+			city,
+			address,
+			position,
+			alarmcount
+		) VALUES (
+			#{id},
+			sysdate(),
+			#{deviceNo},
+			#{workWeekId},
+			#{workWeekName},
+			#{weekBegin},
+			#{weekEnd},
+			#{workCount},
+			#{workBegin},
+			#{workStop},
+			#{sliceRunDuration},
+			#{sliceWorkDuration},
+			#{runOffCount},
+			#{oilSum},
+			#{oilAvg},
+			#{rotationlSpeedMax},
+			#{latitudes},
+			#{longitude},
+			#{province},
+			#{city},
+			#{address},
+			#{position},
+			#{alarmCount}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_deviceweekstatics SET 	
+			inserttime = #{insertTime},
+			deviceno = #{deviceNo},
+			workweekid = #{workWeekId},
+			workweekname = #{workWeekName},
+			weekbegin = #{weekBegin},
+			weekend = #{weekEnd},
+			workcount = #{workCount},
+			workbegin = #{workBegin},
+			workstop = #{workStop},
+			slicerunduration = #{sliceRunDuration},
+			sliceworkduration = #{sliceWorkDuration},
+			runoffcount = #{runOffCount},
+			oilsum = #{oilSum},
+			oilavg = #{oilAvg},
+			rotationlspeedmax = #{rotationlSpeedMax},
+			latitudes = #{latitudes},
+			longitude = #{longitude},
+			province = #{province},
+			city = #{city},
+			address = #{address},
+			position = #{position},
+			alarmcount = #{alarmCount}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_deviceweekstatics
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

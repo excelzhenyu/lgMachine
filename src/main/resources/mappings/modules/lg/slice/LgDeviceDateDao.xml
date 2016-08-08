@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.slice.LgDeviceDateDao">
+
+	<sql id="lgDeviceDateStaticsColumns">
+		a.id AS "id",
+		a.inserttime AS "inserTtime",
+		a.deviceno AS "deviceNo",
+		a.workdate AS "workDate",
+		a.workcount AS "workCount",
+		a.workbegin AS "workBegin",
+		a.workstop AS "workStop",
+		a.slicerunduration AS "sliceRunDuration",
+		a.sliceworkduration AS "sliceWorkDuration",
+		a.runoffcount AS "runoffCount",
+		a.rundurationtotal AS "runDurationTotal",
+		a.workdurationtotal AS "workDurationTotal",
+		a.runofftotal AS "runOffTotal",
+		a.oilsum AS "oilSum",
+		a.oilavg AS "oilAvg",
+		a.rotationlspeedmax AS "rotationlSpeedMax",
+		a.latitudes AS "latitudes",
+		a.longitude AS "longitude",
+		a.province AS "province",
+		a.city AS "city",
+		a.address AS "address",
+		a.position AS "position",
+		a.alarmcount AS "alarmCount"
+	</sql>
+
+	<sql id="lgDeviceDateStaticsJoins">
+	</sql>
+
+	
+	<insert id="saveDateData">
+		INSERT INTO lg_devicedatestatics 
+		select 
+			replace(uuid(),'-',''),
+			sysdate(),
+			#{deviceNo},
+			#{workDate},
+			sum(workCount),
+			#{workBegin}, 
+			#{workStop},
+			#{sliceRunDuration}, 
+			#{sliceWorkDuration}, 
+			#{runoffCount}, 
+			sum(runDurationTotal),
+			sum(workDurationTotal),
+			sum(runOffTotal),
+			#{oilSum}, 
+			#{oilAvg}, 
+			#{rotationlSpeedMax}, 
+			#{latitudes}, 
+			#{longitude}, 
+			#{province}, 
+			#{city}, 
+			#{address}, 
+			#{position}, 
+			#{alarmCount} 
+		from (
+			select workCount,runDurationTotal,workDurationTotal, runOffTotal from lg_devicedatestatics 
+			where deviceNo=#{deviceNo} and workDate=date_sub(date(#{workDate}), interval 1 day)
+			union all	
+			select #{workCount} as workCount, #{sliceRunDuration} as runDurationTotal, #{sliceWorkDuration} as workDurationTotal, #{runoffCount} as runOffTotal from dual
+		) a
+	</insert>
+
+
+</mapper>

@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.exptmachine.LgExptMachinePickDetailDao">
+    
+	<sql id="lgExptMachinePickDetailColumns">
+		a.id AS "id",
+		a.pickid AS "pickId",
+		a.machineid AS "machineId",
+		a.remarks AS "remarks"
+	</sql>
+	<sql id="lgExptMachinePickDetailColumns_1">
+		a.id AS "id",
+		a.code AS "code",
+		a.pincode AS "pinCode",
+		a.shortname AS "shortName",
+		a.name AS "name",
+		a.enname AS "enName",
+		a.modelnumber AS "modelNumber",
+		a.ordernumber AS "orderNumber",
+		a.machinetype AS "machineType",
+		a.certificationnumber AS "certificationNumber",
+		a.machinestatus AS "machineStatus",
+		a.statusdetail AS "statusDetail",
+		a.productdate AS "productDate",
+		a.servicefilenumber AS "serviceFileNumber",
+		a.filecreatedate AS "fileCreatedate",
+		b.dimensionName AS "bookBuildingId",
+		c.dimensionName AS "saleAreaId",
+		a.saletype AS "saleType",
+		d.dimensionName AS "saleUnitId",
+		a.saledate AS "saleDate",
+		e.dimensionName AS "customerId",
+		a.productfactoryid AS "productFactoryId",
+		a.batchnumber AS "batchNumber",
+		a.producttype AS "productType",
+		a.smartterminalornot AS "smartTerminalOrNot",
+		a.transmitcode AS "transmitCode",
+		a.stopservicemark AS "stopServiceMark",
+		a.imgUrl AS "imgUrl"
+	</sql>
+	
+	<sql id="lgMachineprofileColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.pincode AS "pinCode",
+		a.shortname AS "shortName",
+		a.name AS "name",
+		a.enname AS "enName",
+		a.modelnumber AS "modelNumber",
+		a.ordernumber AS "orderNumber",
+		a.machinetype AS "machineType",
+		a.certificationnumber AS "certificationNumber",
+		a.machinestatus AS "machineStatus",
+		a.statusdetail AS "statusDetail",
+		a.productdate AS "productDate",
+		a.servicefilenumber AS "serviceFileNumber",
+		a.filecreatedate AS "fileCreatedate",
+		a.bookbuildingid AS "bookBuildingId",
+		a.saleareaid AS "saleAreaId",
+		a.saletype AS "saleType",
+		a.saleunitid AS "saleUnitId",
+		a.saledate AS "saleDate",
+		a.customerid AS "customerId",
+		a.productfactoryid AS "productFactoryId",
+		a.batchnumber AS "batchNumber",
+		a.producttype AS "productType",
+		a.smartterminalornot AS "smartTerminalOrNot",
+		a.transmitcode AS "transmitCode",
+		a.stopservicemark AS "stopServiceMark",
+		a.imgUrl AS "imgUrl"
+	</sql>
+	<sql id="lgExptMachinePickDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="LgExptMachinePickDetail">
+		SELECT 
+			<include refid="lgExptMachinePickDetailColumns"/>
+		FROM lg_exptmachinepickdetail a
+		<include refid="lgExptMachinePickDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgExptMachinePickDetail">
+		SELECT 
+			<include refid="lgExptMachinePickDetailColumns"/>
+		FROM lg_exptmachinepickdetail a
+		<include refid="lgExptMachinePickDetailJoins"/>
+		<where>
+			
+			<if test="pickId != null and pickId != ''">
+				AND a.pickid = #{pickId}
+			</if>
+			<if test="machineId != null and machineId != ''">
+				AND a.machineid = #{machineId}
+			</if>
+			<if test="remarks != null and remarks != ''">
+				AND a.remarks = #{remarks}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgExptMachinePickDetail">
+		SELECT 
+			<include refid="lgExptMachinePickDetailColumns"/>
+		FROM lg_exptmachinepickdetail a
+		<include refid="lgExptMachinePickDetailJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_exptmachinepickdetail(
+			id,
+			pickid,
+			machineid,
+			remarks
+		) VALUES (
+			#{id},
+			#{pickId},
+			#{machineId},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_exptmachinepickdetail SET 	
+			pickid = #{pickId},
+			machineid = #{machineId},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_exptmachinepickdetail
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteMachine">
+		DELETE FROM lg_exptmachinepickdetail
+		WHERE pickid = #{pickId} AND machineid = #{machineId}
+	</update>
+	
+	<select id="findMachineList"  resultType="LgMachineprofile">
+		SELECT 
+			<include refid="lgExptMachinePickDetailColumns_1"/>
+		FROM lg_machineprofile a
+			left join lg_machinedimension b on a.bookBuildingId=b.id 
+			left join lg_machinedimension c on a.saleAreaId=c.id 
+			left join lg_machinedimension d on a.saleUnitId=d.id 
+			left join lg_machinedimension e on a.customerId=e.id 
+		<where>		
+			AND a.id in (select machineId from lg_exptMachinePickDetail  where pickid=#{queryMap.pickId})
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+		<select id="findMachineListByQuery"  resultType="LgLabMachineProfileQuery">
+		SELECT 
+			<include refid="lgExptMachinePickDetailColumns_1"/>
+		FROM lg_machineprofile a
+			left join lg_machinedimension b on a.bookBuildingId=b.id 
+			left join lg_machinedimension c on a.saleAreaId=c.id 
+			left join lg_machinedimension d on a.saleUnitId=d.id 
+			left join lg_machinedimension e on a.customerId=e.id 
+		<include refid="lgExptMachinePickDetailJoins"/>
+		<where>		
+			
+			 <if test="machineType != null and machineType != ''"> 
+			 	AND a.machineType = #{machineType}
+			 </if>
+ 
+			<if test="modelNumberList != null">			 
+				    AND a.modelNumber IN
+				    <foreach item="modelNumberList" index="index" collection="modelNumberList" open="(" separator="," close=")">
+				    	#{modelNumberList}
+				    </foreach>
+			</if>
+			<if test="saleAreaIdList != null">			 
+				    AND a.saleareaid IN
+				    <foreach item="saleAreaIdList" index="index" collection="saleAreaIdList" open="(" separator="," close=")">
+				    	#{saleAreaIdList}
+				    </foreach>
+			</if>
+			AND a.id not in (select machineId from lg_exptMachinePickDetail  where pickid=#{pickId})
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 批量插入 -->
+	<insert id="saveBatch" >
+		INSERT INTO lg_exptmachinepickdetail(
+			id,
+			pickid,
+			machineid,
+			remarks
+		) VALUES 
+		 <foreach item="list" index="index" collection="list"  separator="," >
+			(
+				#{list.id},
+				#{list.pickId},
+				#{list.machineId},
+				#{list.remarks}
+			)
+		</foreach>
+	</insert>
+	
+	<!-- 批量插入 -->
+	<insert id="saveImportBatch" >
+		INSERT INTO lg_exptmachinepickdetail(
+			id,
+			pickid,
+			machineid,
+			remarks
+		) 
+		 <foreach item="list" index="index" collection="list"  separator=" union all " >		 
+			SELECT
+				#{list.id},
+				#{list.pickId},
+				b.id,
+				#{list.remarks}
+			FROM lg_machineprofile b WHERE b.code=#{list.machineId}
+		</foreach>
+	</insert>
+	<select id="findMachineCodeList" resultType="String">
+		select code from lg_machineprofile 
+		<where> 
+		And code in 
+		 <foreach item="code" index="index" collection="queryMap.codeList" open="(" separator="," close=")">
+			#{code}
+		</foreach>
+		and id in (select machineId from lg_exptmachinepickdetail where pickId= #{queryMap.pickId})
+		</where>
+	</select>
+	<select id="findExistMachineCodeList" resultType="LgMachineprofile">
+		select 
+		<include refid="lgMachineprofileColumns"/>
+		from lg_machineprofile 
+		<where> 
+		And code in 
+		 <foreach item="code" index="index" collection="queryMap.codeList" open="(" separator="," close=")">
+			#{code}
+		</foreach>
+		</where>
+	</select>
+	
+	<select id="getMachineCodeByBatchNumber" resultType="java.lang.String"> 
+		select a.code from lg_machineprofile a where 
+			exists (select 1 from lg_exptmachinepickdetail b where
+			exists (
+			select 1 from lg_exptmachinepick c where b.pickId=c.id 
+			<if test="list != null and list.size() > 0">
+				and c.batchNumber in 
+				<foreach item="batchNumber" index="index" collection="list" open="(" separator="," close=")">
+					#{batchNumber}
+				</foreach>
+			</if>
+		) and  a.id=b.machineid )
+	</select>
+	
+	<select id="getMachineCodeByPickId" resultType="java.lang.String"> 
+		select a.code from lg_machineprofile a where 
+			exists (select 1 from lg_exptmachinepickdetail b where a.id=b.machineid 
+		<if test="list != null and list.size() > 0">
+			and b.pickid in 
+			<foreach item="pickId" index="index" collection="list" open="(" separator="," close=")">
+				#{pickId}
+			</foreach>
+		</if>
+		)
+	</select>
+	 
+	<select id="getExptMachineCode" resultType="java.lang.String"> 
+		select a.code from lg_machineprofile a where 
+			exists (select 1 from lg_exptmachinepickdetail b where a.id=b.machineid 
+			and b.pickid = #{pickId}
+		)
+	</select>
+	 	<!-- 
+	 
+	<select id="getExptMachineCode" resultType="java.lang.String"> 
+		    select a.code from lg_machineprofile a where 
+				exists (  select 1 from lg_exptmachinepickdetail b where exists (
+					select batchNumber from lg_exptmachinepick c where b.pickId=c.id and c.batchNumber=#{batchNumber}
+				) and a.id=b.machineid 
+			)
+	</select>
+		 -->
+	
+</mapper>

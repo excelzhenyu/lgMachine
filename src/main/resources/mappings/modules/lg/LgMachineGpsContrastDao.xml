@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.k2data.platform.modules.lg.dao.LgMachineGpsContrastDao">
+    
+	<sql id="lgMachineGpsContrastColumns">
+		a.id AS "id",
+		a.deviceno AS "deviceNo",
+		a.gpsno AS "gpsNo",
+		a.gpstemplateno AS "gpsTemplateNo",
+		a.isvalid AS "isValid"
+	</sql>
+	
+	<sql id="lgMachineGpsContrastJoins">
+	</sql>
+    
+	<select id="get" resultType="LgMachineGpsContrast">
+		SELECT 
+			<include refid="lgMachineGpsContrastColumns"/>
+		FROM lg_machinegpscontrast a
+		<include refid="lgMachineGpsContrastJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LgMachineGpsContrast">
+		SELECT 
+			<include refid="lgMachineGpsContrastColumns"/>
+		FROM lg_machinegpscontrast a
+		<include refid="lgMachineGpsContrastJoins"/>
+		<where>
+			
+			<if test="deviceNo != null and deviceNo != ''">
+				AND a.deviceno = #{deviceNo}
+			</if>
+			<if test="gpsNo != null and gpsNo != ''">
+				AND a.gpsno = #{gpsNo}
+			</if>
+			<if test="gpsTemplateNo != null and gpsTemplateNo != ''">
+				AND a.gpstemplateno = #{gpsTemplateNo}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LgMachineGpsContrast">
+		SELECT 
+			<include refid="lgMachineGpsContrastColumns"/>
+		FROM lg_machinegpscontrast a
+		<include refid="lgMachineGpsContrastJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO lg_machinegpscontrast(
+			id,
+			deviceno,
+			gpsno,
+			gpstemplateno,
+			isvalid
+		) VALUES (
+			#{id},
+			#{deviceNo},
+			#{gpsNo},
+			#{gpsTemplateNo},
+			#{isValid}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE lg_machinegpscontrast SET 	
+			deviceno = #{deviceNo},
+			gpsno = #{gpsNo},
+			gpstemplateno = #{gpsTemplateNo},
+			isvalid = #{isValid}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM lg_machinegpscontrast
+		WHERE id = #{id}
+	</update>
+	
+	<select id="checkDeviceNo" resultType="LgMachineGpsContrast">
+		SELECT
+		<include refid="lgMachineGpsContrastColumns" />
+		FROM lg_machinegpscontrast a
+		<include refid="lgMachineGpsContrastJoins" />
+		WHERE a.deviceNo = #{deviceNo}
+		<if test="@Ognl@isNotEmpty(id)"> AND id!=#{id}</if>
+		limit 1
+	</select>
+	
+	<select id="checkGpsNo" resultType="LgMachineGpsContrast">
+		SELECT
+		<include refid="lgMachineGpsContrastColumns" />
+		FROM lg_machinegpscontrast a
+		<include refid="lgMachineGpsContrastJoins" />
+		WHERE a.gpsNo = #{gpsNo}
+		<if test="@Ognl@isNotEmpty(id)"> AND id!=#{id}</if>
+		limit 1
+	</select>
+	
+</mapper>

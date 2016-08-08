@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>job</name>
+	<filePath>src/main/java/${packageName}/workcenter/quartz/job/${jobGroup?lower_case}</filePath>
+	<fileName>${jobName?cap_first}Job.java</fileName>
+	<content><![CDATA[
+package ${packageName}.workcenter.quartz.job.${jobGroup?lower_case};
+
+import org.quartz.DisallowConcurrentExecution;
+
+import ${packageName}.workcenter.quartz.common.BaseWorkCenterJob;
+import ${packageName}.workcenter.quartz.common.MessageExt;
+
+/**
+ * ${functionName} Quartz Job
+ *
+ * @author ${functionAuthor}
+ */
+@DisallowConcurrentExecution
+public class ${jobName?cap_first}Job extends BaseWorkCenterJob<T> {	// TODO T 替换成父级 job 传递数据对象的类型，没有传递数据就改为 Object
+
+	@Override
+	protected MessageExt run(T parentData) {
+		// TODO 具体 job 要执行的业务代码
+		
+		return new MessageExt(0, 0, null, "");	// TODO 根据需要修改参数
+	}
+
+}
+]]>
+	</content>
+</template>
